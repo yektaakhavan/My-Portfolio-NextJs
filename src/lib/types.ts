@@ -45,6 +45,7 @@ export type Project = {
   title: string;
   slug: string;
   description: string;
+  details: string;
   tags: string[];
   tech: string[];
   liveUrl: string;

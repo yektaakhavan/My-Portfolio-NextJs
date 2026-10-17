@@ -5,7 +5,7 @@ import { badRequest } from "@/lib/auth";
 import { toProject } from "@/lib/data";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
 import { parseImages, strList } from "@/lib/admin-input";
-import { safeHttpUrl } from "@/lib/validators";
+import { cleanText, safeHttpUrl } from "@/lib/validators";
 import { slugify } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +55,8 @@ export async function PUT(
       title,
       slug,
       description: String(body.description ?? existing.description).trim(),
+      // only touched when the write-up editor sends it, so editing other fields never wipes the write-up
+      details: "details" in body ? cleanText(body.details, 20000) : existing.details,
       tags: Array.isArray(body.tags) ? strList(body.tags, 12, 40) : existing.tags,
       tech: Array.isArray(body.tech) ? strList(body.tech, 20, 40) : existing.tech,
       liveUrl: "liveUrl" in body ? safeHttpUrl(body.liveUrl) : existing.liveUrl,

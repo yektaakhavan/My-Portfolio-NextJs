@@ -5,7 +5,7 @@ import { badRequest, getCurrentUser, unauthorized } from "@/lib/auth";
 import { toProject } from "@/lib/data";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
 import { parseImages, strList } from "@/lib/admin-input";
-import { safeHttpUrl } from "@/lib/validators";
+import { cleanText, safeHttpUrl } from "@/lib/validators";
 import { slugify } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -52,6 +52,7 @@ export async function POST(req: Request) {
     .values({
       title,
       description,
+      details: cleanText(body.details, 20000),
       slug: await uniqueSlug(title),
       tags: strList(body.tags, 12, 40),
       tech: strList(body.tech, 20, 40),

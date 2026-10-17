@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Icon } from "@/components/icons";
+import { MarkdownContent } from "@/components/markdown";
 import { PublicShell } from "@/components/public-shell";
 import { ScreenshotGrid } from "@/components/project-media";
 import { Badge, Button, Card } from "@/components/ui";
@@ -76,6 +77,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             )}
           </div>
         </Card>
+
+        {project.details.trim() && (
+          <section aria-labelledby="notes">
+            <Card className="p-6 sm:p-8">
+              <h2 id="notes" className="mb-4 font-display text-2xl text-fg">Behind the project</h2>
+              <MarkdownContent source={project.details} />
+            </Card>
+          </section>
+        )}
 
         {project.images.length > 0 && (
           <section aria-labelledby="shots" className="space-y-4">

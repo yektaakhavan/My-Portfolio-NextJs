@@ -194,6 +194,7 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
                       <Icon name="star" className="h-3 w-3" /> Featured
                     </Badge>
                   )}
+                  {p.details && <Badge tone="ok">Has write-up</Badge>}
                   <span className="font-mono text-[11px] text-muted">/{p.slug}</span>
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-muted">{p.description}</p>
@@ -211,6 +212,9 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
                 </div>
               </div>
               <div className="flex shrink-0 gap-1 px-4 pb-4 sm:pb-0">
+                <Button href={`/admin/projects/${p.id}/details`} variant="soft" size="sm" icon="file-text">
+                  Write-up<span className="sr-only"> for project {p.title}</span>
+                </Button>
                 <Button variant="soft" size="sm" icon="pencil" onClick={() => openEdit(p)}>
                   Edit<span className="sr-only"> project {p.title}</span>
                 </Button>

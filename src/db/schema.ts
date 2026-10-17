@@ -69,6 +69,8 @@ export const projects = pgTable("projects", {
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
   description: text("description").notNull(),
+  /** Optional long write-up (Markdown): what I learned, challenges, result… shown on the project page. */
+  details: text("details").notNull().default(""),
   tags: jsonb("tags").$type<string[]>().notNull(),
   tech: jsonb("tech").$type<string[]>().notNull(),
   liveUrl: text("live_url").notNull().default(""),

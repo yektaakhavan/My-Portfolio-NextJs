@@ -21,7 +21,7 @@ export default async function MessagesPage() {
           <section aria-labelledby="wall" className="space-y-4">
             <h2 id="wall" className="font-display text-xl text-fg">Approved messages ({items.length})</h2>
             {items.length === 0 ? (
-              <EmptyState icon="message" title="No messages yet" description="Be the first to leave one — it will show up after review." />
+              <EmptyState as="h3" icon="message" title="No messages yet" description="Be the first to leave one — it will show up after review." />
             ) : (
               <ul className="space-y-4">
                 {items.map((m) => (

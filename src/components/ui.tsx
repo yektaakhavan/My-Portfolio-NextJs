@@ -202,7 +202,7 @@ export function Input({ className, invalid, ...props }: InputHTMLAttributes<HTML
   return <input className={cn(fieldBase, invalid && "border-danger", className)} {...props} />;
 }
 
-export function Textarea({ className, invalid, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { invalid?: boolean }) {
+export function Textarea({ className, invalid, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { invalid?: boolean; ref?: Ref<HTMLTextAreaElement> }) {
   return <textarea className={cn(fieldBase, "min-h-[7rem] resize-y", invalid && "border-danger", className)} {...props} />;
 }
 
@@ -291,18 +291,21 @@ export function EmptyState({
   title,
   description,
   action,
+  as: Heading = "h2",
 }: {
   icon?: IconName;
   title: string;
   description?: string;
   action?: ReactNode;
+  /** heading level: h2 when it sits directly under the page title, h3 when inside an h2 section */
+  as?: "h2" | "h3";
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-muted/50 bg-surface/40 px-6 py-14 text-center">
       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-2 text-accent-300 ring-1 ring-line">
         <Icon name={icon} className="h-6 w-6" />
       </div>
-      <h3 className="font-display text-lg text-fg">{title}</h3>
+      <Heading className="font-display text-lg text-fg">{title}</Heading>
       {description ? <p className="mt-1.5 max-w-sm text-sm text-muted">{description}</p> : null}
       {action ? <div className="mt-5">{action}</div> : null}
     </div>
