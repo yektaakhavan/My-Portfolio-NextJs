@@ -1,0 +1,484 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   رنگ‌ها و استایل — فقط همین فایل را عوض کنید، کل سایت (حالت دارک و لایت) عوض می‌شود
+   Colors & style — edit only this file; the whole site (dark + light) follows.
+
+   نقد صادقانه‌ی پالت فعلی (بنفش تیره + طلایی + پس‌زمینه‌ی ستاره‌ای):
+   - بله، تکراری است. «پس‌زمینه‌ی تیره‌ی بنفش + تأکید طلایی + درخشش‌های محو + کارت‌های گرد»
+     یکی از رایج‌ترین ترکیب‌های قالب‌های پورتفولیوی توسعه‌دهندگان است و تمایز زیادی نمی‌سازد.
+   - ترکیب فونت سریف Fraunces با طلایی حس «برند لوکس / نویسنده» می‌دهد، نه «فرانت‌اند دولوپر».
+   - کنتراست متن‌ها خوب است (متن فرعی روی پس‌زمینه ۶.۸ به ۱)، اما خط‌های جداکننده‌ی کارت‌ها
+     خیلی کم‌رنگ بودند (۱.۴ به ۱)؛ در این نسخه کمی پررنگ‌تر شده‌اند.
+
+   چطور عوض کنم؟
+   ۱) بلوک «ACTIVE PALETTE» پایین را پاک کنید (یا کامنتش کنید).
+   ۲) یکی از بلوک‌های کامنت‌شده (گزینه‌های B تا D) را از حالت کامنت دربیاورید.
+   همه‌ی گزینه‌ها برای هر دو حالت دارک و لایت نوشته شده‌اند و کنتراست متن‌ها
+   (حداقل ۴.۵ به ۱ برای متن، ۳ به ۱ برای اجزای رابط) با ابزار بررسی شده است — استاندارد WCAG 2.2 AA.
+
+   پیشنهاد من: گزینه C (کاغذ گرم + نارنجی-قرمز «ورمیلیون»)؛ چون با فونت سریف فعلی هماهنگ است،
+   شبیه قالب‌های آماده نیست و روی لایت‌مود هم عالی کار می‌کند. اگر ظاهر «فنی‌تر» می‌خواهید، گزینه B یا D.
+   ========================================================================== */
+
+@theme inline {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+
+  --color-canvas: var(--c-canvas);
+  --color-canvas-deep: var(--c-canvas-deep);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-surface-3: var(--c-surface-3);
+  --color-line: var(--c-line);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+
+  --color-accent-300: var(--c-accent-300);
+  --color-accent-400: var(--c-accent-400);
+  --color-accent-500: var(--c-accent-500);
+  --color-accent-600: var(--c-accent-600);
+  --color-on-accent: var(--c-on-accent);
+
+  --color-brand-300: var(--c-brand-300);
+  --color-brand-400: var(--c-brand-400);
+  --color-brand-500: var(--c-brand-500);
+
+  --color-ok: var(--c-ok);
+  --color-warn: var(--c-warn);
+  --color-danger: var(--c-danger);
+}
+
+/* ======================= ACTIVE PALETTE — A: Violet Night & Gold (فعلی) ======================= */
+/* :root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #140d24;
+  --c-canvas-deep: #0e0919;
+  --c-surface: #1a1230;
+  --c-surface-2: #221841;
+  --c-surface-3: #2c2052;
+  --c-line: #4a3b7a;
+  --c-fg: #f3eefb;
+  --c-muted: #b3a6d4;
+  --c-accent-300: #f1d8a6;
+  --c-accent-400: #e6c489;
+  --c-accent-500: #d2a75e;
+  --c-accent-600: #b58a42;
+  --c-on-accent: #0e0919;
+  --c-brand-300: #c7b4f4;
+  --c-brand-400: #a78bfa;
+  --c-brand-500: #8b6fd8;
+  --c-ok: #74d3a0;
+  --c-warn: #e3b45f;
+  --c-danger: #ef7d8b;
+  --c-glow-1: rgba(139, 111, 216, 0.16);
+  --c-glow-2: rgba(139, 111, 216, 0.1);
+  --c-glow-3: rgba(210, 167, 94, 0.07);
+  --c-star: rgba(243, 238, 251, 0.45);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-canvas: #faf7ff;
+  --c-canvas-deep: #f1ecfa;
+  --c-surface: #ffffff;
+  --c-surface-2: #f1ecfa;
+  --c-surface-3: #e4dcf4;
+  --c-line: #c9bde6;
+  --c-fg: #1c1430;
+  --c-muted: #5d5078;
+  --c-accent-300: #8a5a0a;
+  --c-accent-400: #bd8420;
+  --c-accent-500: #b9852c;
+  --c-accent-600: #8a5a0a;
+  --c-on-accent: #1c1430;
+  --c-brand-300: #5b3fb0;
+  --c-brand-400: #8b6fd8;
+  --c-brand-500: #6d4fc9;
+  --c-ok: #17724a;
+  --c-warn: #8a5a0a;
+  --c-danger: #b3243a;
+  --c-glow-1: rgba(139, 111, 216, 0.1);
+  --c-glow-2: rgba(212, 162, 74, 0.08);
+  --c-glow-3: rgba(139, 111, 216, 0.05);
+  --c-star: transparent;
+} */
+/* ======================= END ACTIVE PALETTE ======================= */
+
+/* ---------------------------------------------------------------------------
+   OPTION B — «Ink & Teal» (فنی، تمیز، مدرن)
+   دارک: مرکب-سبزآبی تیره + فیروزه‌ای   |   لایت: سفید مایل به سبز + سبزآبی عمیق
+   مناسب: ظاهر «ابزار توسعه‌دهنده»؛ بنفش و طلایی کاملاً حذف می‌شود.
+--------------------------------------------------------------------------- */
+
+/* :root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #0b1316;
+  --c-canvas-deep: #070d10;
+  --c-surface: #111c20;
+  --c-surface-2: #17262b;
+  --c-surface-3: #1f3238;
+  --c-line: #3a5760;
+  --c-fg: #eef6f6;
+  --c-muted: #a1b8bc;
+  --c-accent-300: #5eead4;
+  --c-accent-400: #2dd4bf;
+  --c-accent-500: #14b8a6;
+  --c-accent-600: #0d9488;
+  --c-on-accent: #04201c;
+  --c-brand-300: #7dd3fc;
+  --c-brand-400: #38bdf8;
+  --c-brand-500: #0ea5e9;
+  --c-ok: #4ade80;
+  --c-warn: #fbbf24;
+  --c-danger: #fb7185;
+  --c-glow-1: rgba(45, 212, 191, 0.10);
+  --c-glow-2: rgba(56, 189, 248, 0.07);
+  --c-glow-3: rgba(45, 212, 191, 0.04);
+  --c-star: transparent;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-canvas: #f6faf9;
+  --c-canvas-deep: #ecf3f2;
+  --c-surface: #ffffff;
+  --c-surface-2: #ecf3f2;
+  --c-surface-3: #dbe7e5;
+  --c-line: #b6cac7;
+  --c-fg: #0f1f22;
+  --c-muted: #4a6166;
+  --c-accent-300: #0d6b64;
+  --c-accent-400: #0f766e;
+  --c-accent-500: #0d6b64;
+  --c-accent-600: #115e59;
+  --c-on-accent: #ffffff;
+  --c-brand-300: #0369a1;
+  --c-brand-400: #0284c7;
+  --c-brand-500: #0369a1;
+  --c-ok: #17724a;
+  --c-warn: #8a5a0a;
+  --c-danger: #b3243a;
+  --c-glow-1: rgba(15, 118, 110, 0.07);
+  --c-glow-2: rgba(2, 132, 199, 0.05);
+  --c-glow-3: rgba(15, 118, 110, 0.03);
+  --c-star: transparent;
+} */
+
+/* ---------------------------------------------------------------------------
+   OPTION C — «Paper & Vermilion» (پیشنهاد من — ادیتوریال، گرم، متمایز)
+   لایت: کاغذ کرم + جوهر تیره + نارنجی-قرمز   |   دارک: قهوه‌ای-زغالی گرم + نارنجی روشن
+   مناسب: با فونت سریف Fraunces بسیار هماهنگ؛ شبیه قالب‌های آماده‌ی پورتفولیو نیست.
+--------------------------------------------------------------------------- */
+/*
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #151311;
+  --c-canvas-deep: #0f0d0b;
+  --c-surface: #1d1a17;
+  --c-surface-2: #26221e;
+  --c-surface-3: #322d27;
+  --c-line: #51493e;
+  --c-fg: #f5efe4;
+  --c-muted: #b8ae9d;
+  --c-accent-300: #ff9a6c;
+  --c-accent-400: #ff7a45;
+  --c-accent-500: #f0602a;
+  --c-accent-600: #c94b1c;
+  --c-on-accent: #1a0b04;
+  --c-brand-300: #8fd0e6;
+  --c-brand-400: #5bb5d3;
+  --c-brand-500: #3a9abd;
+  --c-ok: #6fd49b;
+  --c-warn: #e8b25a;
+  --c-danger: #f38b95;
+  --c-glow-1: rgba(255, 122, 69, 0.09);
+  --c-glow-2: rgba(91, 181, 211, 0.05);
+  --c-glow-3: rgba(255, 122, 69, 0.04);
+  --c-star: transparent;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-canvas: #faf6ef;
+  --c-canvas-deep: #f1ebe0;
+  --c-surface: #fffdf8;
+  --c-surface-2: #f1ebe0;
+  --c-surface-3: #e6dccb;
+  --c-line: #cdbfa8;
+  --c-fg: #1d1a16;
+  --c-muted: #5e564a;
+  --c-accent-300: #a8370a;
+  --c-accent-400: #c2410c;
+  --c-accent-500: #b13a0a;
+  --c-accent-600: #9a3412;
+  --c-on-accent: #ffffff;
+  --c-brand-300: #1f4e5f;
+  --c-brand-400: #2b6a80;
+  --c-brand-500: #1f5568;
+  --c-ok: #1b7a46;
+  --c-warn: #8a5a0a;
+  --c-danger: #b3243a;
+  --c-glow-1: rgba(194, 65, 12, 0.06);
+  --c-glow-2: rgba(31, 85, 104, 0.04);
+  --c-glow-3: rgba(194, 65, 12, 0.03);
+  --c-star: transparent;
+}
+*/
+
+/* ---------------------------------------------------------------------------
+   OPTION D — «Slate & Electric Blue» (حرفه‌ای و کم‌ریسک)
+   دارک: خاکستری-آبی + آبی الکتریک   |   لایت: سفید مایل به آبی + آبی کبالتی
+   مناسب: ظاهر شرکتی/استارتاپی؛ برای جذب کارفرماهای سازمانی امن‌ترین انتخاب.
+--------------------------------------------------------------------------- */
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-canvas: #0e1318;
+  --c-canvas-deep: #090d11;
+  --c-surface: #151c23;
+  --c-surface-2: #1c2630;
+  --c-surface-3: #26323f;
+  --c-line: #3f5164;
+  --c-fg: #eef2f7;
+  --c-muted: #a3b3c6;
+  --c-accent-300: #93b4ff;
+  --c-accent-400: #6b95ff;
+  --c-accent-500: #4c7bf0;
+  --c-accent-600: #3a63d0;
+  --c-on-accent: #050b1a;
+  --c-brand-300: #7ee0c3;
+  --c-brand-400: #3fcfa8;
+  --c-brand-500: #22b58f;
+  --c-ok: #5ee0a0;
+  --c-warn: #f0b95c;
+  --c-danger: #f38b95;
+  --c-glow-1: rgba(107, 149, 255, 0.1);
+  --c-glow-2: rgba(63, 207, 168, 0.06);
+  --c-glow-3: rgba(107, 149, 255, 0.04);
+  --c-star: transparent;
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --c-canvas: #f5f7fb;
+  --c-canvas-deep: #eaeef5;
+  --c-surface: #ffffff;
+  --c-surface-2: #eaeef5;
+  --c-surface-3: #d9e0ec;
+  --c-line: #b8c3d6;
+  --c-fg: #101828;
+  --c-muted: #4a5871;
+  --c-accent-300: #1d4ed8;
+  --c-accent-400: #2563eb;
+  --c-accent-500: #1d4ed8;
+  --c-accent-600: #1e40af;
+  --c-on-accent: #ffffff;
+  --c-brand-300: #0a6e53;
+  --c-brand-400: #0f9b76;
+  --c-brand-500: #0b7a5c;
+  --c-ok: #17724a;
+  --c-warn: #8a5a0a;
+  --c-danger: #b3243a;
+  --c-glow-1: rgba(37, 99, 235, 0.06);
+  --c-glow-2: rgba(15, 155, 118, 0.04);
+  --c-glow-3: rgba(37, 99, 235, 0.03);
+  --c-star: transparent;
+}
+
+/* نکته‌ی فونت (اختیاری): برای ظاهر کمتر «کتابی»، فونت عنوان را می‌توانید با یک فونت بدون‌سریف
+   مثل Space Grotesk یا Sora عوض کنید:
+   npm i @fontsource-variable/space-grotesk  →  در layout.tsx import کنید  →  بالا --font-display را عوض کنید. */
+
+/* ========================= base ========================= */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--c-canvas);
+  color: var(--c-fg);
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--c-accent-400) 35%, transparent);
+  color: var(--c-fg);
+}
+
+/* Visible keyboard focus everywhere (WCAG 2.4.7 / 2.4.11) */
+:focus-visible {
+  outline: 3px solid var(--c-accent-300);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-surface-3) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--c-surface-3);
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Skip link — first focusable element on every page */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  border-radius: 0.5rem;
+  background: var(--c-accent-400);
+  color: var(--c-on-accent);
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Soft backdrop: glows (+ faint star specks in the current dark palette) */
+.starfield {
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, var(--c-star) 50%, transparent 51%),
+    radial-gradient(1px 1px at 32% 62%, var(--c-star) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 58% 24%, var(--c-star) 50%, transparent 51%),
+    radial-gradient(1px 1px at 74% 70%, var(--c-star) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 34%, var(--c-star) 50%, transparent 51%),
+    radial-gradient(60rem 40rem at 85% -10%, var(--c-glow-1), transparent 60%),
+    radial-gradient(50rem 36rem at -10% 30%, var(--c-glow-2), transparent 60%),
+    radial-gradient(40rem 30rem at 50% 110%, var(--c-glow-3), transparent 60%);
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--c-surface-2);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--c-fg) 7%, transparent),
+    transparent
+  );
+  animation: shimmer 1.6s infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-up {
+  animation: fade-up 0.5s ease both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.toast-in {
+  animation: toast-in 0.25s ease both;
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.modal-panel {
+  animation: modal-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.modal-backdrop {
+  animation: backdrop-in 0.2s ease both;
+}
+
+/* Gradient cards for projects (white text sits on top in both themes) */
+.project-accent-0 {
+  background: linear-gradient(135deg, #2c2052 0%, #4a2f7d 55%, #6b46b0 100%);
+}
+.project-accent-1 {
+  background: linear-gradient(135deg, #3a2417 0%, #6b4423 55%, #a06a2f 100%);
+}
+.project-accent-2 {
+  background: linear-gradient(135deg, #17302a 0%, #245c4a 55%, #2f8f6b 100%);
+}
+.project-accent-3 {
+  background: linear-gradient(135deg, #33182b 0%, #632a52 55%, #9c4179 100%);
+}
+.project-accent-4 {
+  background: linear-gradient(135deg, #1a2440 0%, #2c4372 55%, #3f63ad 100%);
+}
+
+/* Respect "reduce motion" (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #1a1a1a;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
