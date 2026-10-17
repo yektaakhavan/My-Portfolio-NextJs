@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { SortableList } from "@/components/sortable";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { Skill } from "@/lib/types";
@@ -36,6 +37,18 @@ export default function SkillsClient({ initial }: { initial: Skill[] }) {
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Skill | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  async function reorder(next: Skill[]) {
+    const previous = skills;
+    setSkills(next.map((x, i) => ({ ...x, sort: i + 1 })));
+    try {
+      await api("/api/admin/skills/reorder", { method: "PUT", json: { ids: next.map((x) => x.id) } });
+      toast({ tone: "success", title: "Order saved" });
+    } catch (e) {
+      setSkills(previous);
+      toast({ tone: "error", title: "Could not save the new order", detail: e instanceof Error ? e.message : undefined });
+    }
+  }
 
   function openCreate() {
     setForm(EMPTY);
@@ -111,9 +124,19 @@ export default function SkillsClient({ initial }: { initial: Skill[] }) {
           }
         />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {skills.map((s) => (
-            <Card key={s.id} className="flex items-center gap-3 p-4 transition hover:border-accent-400/40">
+        <>
+          <p className="text-xs text-muted">
+            Drag the grip handle to change the order (or focus it, press Space, use the arrow keys, then Space again). The order is saved automatically and used on the public site.
+          </p>
+          <SortableList
+            items={skills}
+            onReorder={reorder}
+            getLabel={(s) => s.name}
+            layout="grid"
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            renderItem={(s, handle) => (
+            <Card className="flex items-center gap-2 p-3 transition hover:border-accent-400/40">
+              {handle}
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-surface-2 text-accent-300 ring-1 ring-line">
                 <SkillMark icon={s.icon} className="h-6 w-6" />
               </span>
@@ -141,8 +164,9 @@ export default function SkillsClient({ initial }: { initial: Skill[] }) {
                 </button>
               </div>
             </Card>
-          ))}
-        </div>
+            )}
+          />
+        </>
       )}
 
       <Modal

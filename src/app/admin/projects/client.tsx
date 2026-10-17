@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { cn, splitList } from "@/lib/utils";
 import { monogram, type Project, type ProjectImage } from "@/lib/types";
 import { ImageDropzone } from "@/components/image-dropzone";
+import { SortableList } from "@/components/sortable";
 import { Icon } from "@/components/icons";
 import { useToast } from "@/components/toast";
 import {
@@ -65,6 +66,18 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  async function reorder(next: Project[]) {
+    const previous = projects;
+    setProjects(next.map((x, i) => ({ ...x, sort: i + 1 })));
+    try {
+      await api("/api/admin/projects/reorder", { method: "PUT", json: { ids: next.map((x) => x.id) } });
+      toast({ tone: "success", title: "Order saved" });
+    } catch (e) {
+      setProjects(previous);
+      toast({ tone: "error", title: "Could not save the new order", detail: e instanceof Error ? e.message : undefined });
+    }
+  }
 
   function openCreate() {
     setForm(EMPTY);
@@ -155,12 +168,21 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
           }
         />
       ) : (
-        <div className="space-y-4">
-          {projects.map((p) => (
+        <>
+          <p id="reorder-hint" className="text-xs text-muted">
+            Drag the grip handle to change the order (or focus it, press Space, use the arrow keys, then Space again). The order is saved automatically and used on the public site.
+          </p>
+          <SortableList
+            items={projects}
+            onReorder={reorder}
+            getLabel={(p) => p.title}
+            layout="list"
+            className="space-y-4"
+            renderItem={(p, handle) => (
             <div
-              key={p.id}
               className="flex flex-col gap-4 overflow-hidden rounded-2xl border border-line bg-surface/70 sm:flex-row sm:items-center"
             >
+              <div className="flex items-center pt-3 pl-2 sm:py-0">{handle}</div>
               <div className={cn("flex h-24 w-full shrink-0 items-center justify-center sm:h-auto sm:w-36 sm:self-stretch", `project-accent-${p.accent % 5}`)}>
                 <span className="font-display text-2xl text-fg/30">{monogram(p.title)}</span>
               </div>
@@ -197,8 +219,9 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
                 </Button>
               </div>
             </div>
-          ))}
-        </div>
+            )}
+          />
+        </>
       )}
 
       <Modal

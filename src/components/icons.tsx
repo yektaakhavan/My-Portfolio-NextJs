@@ -37,9 +37,22 @@ export type IconName =
   | "moon"
   | "upload"
   | "message"
-  | "shield";
+  | "shield"
+  | "grip"
+  | "file-text";
 
 const stroke: Record<string, React.ReactNode> = {
+  grip: (
+    <>
+      {[9, 15].flatMap((x) => [6, 12, 18].map((y) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.3" fill="currentColor" stroke="none" />))}
+    </>
+  ),
+  "file-text": (
+    <>
+      <path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7l-4-4z" />
+      <path d="M14 3v4h4M9 12h6M9 16h6" />
+    </>
+  ),
   sun: (
     <>
       <circle cx="12" cy="12" r="4" />
