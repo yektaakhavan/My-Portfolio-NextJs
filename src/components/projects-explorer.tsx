@@ -92,7 +92,7 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
         <ul className="grid gap-6 md:grid-cols-2">
           {filtered.map((p) => (
             <li key={p.id} className="flex">
-              <div className="w-full">
+              <div className="h-full w-full">
                 <ProjectCard p={p} as="h2" />
               </div>
             </li>

@@ -114,7 +114,7 @@ export default async function HomePage() {
           </div>
           <ul className="grid gap-6 md:grid-cols-2">
             {featured.map((p) => (
-              <li key={p.id} className="flex"><div className="w-full"><ProjectCard p={p} /></div></li>
+              <li key={p.id} className="flex"><div className="h-full w-full"><ProjectCard p={p} maxTech={4} /></div></li>
             ))}
           </ul>
         </div>

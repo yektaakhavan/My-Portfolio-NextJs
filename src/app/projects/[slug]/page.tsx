@@ -41,7 +41,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <div className="relative w-full bg-gradient-to-t from-black/70 to-transparent p-6 sm:p-8">
               {project.tags.length > 0 && (
                 <ul aria-label="Tags" className="mb-2 flex flex-wrap gap-2">
-                  {project.tags.map((t) => <li key={t} className="rounded-full bg-black/60 px-2.5 py-0.5 text-xs font-semibold text-white">{t}</li>)}
+                  {project.tags.slice(0, 3).map((t) => <li key={t} className="rounded-full bg-black/60 px-2.5 py-0.5 text-xs font-semibold text-white">{t}</li>)}
                 </ul>
               )}
               <h1 className="font-display text-3xl font-bold text-white sm:text-5xl">{project.title}</h1>
@@ -52,6 +52,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               <h2 id="overview" className="mb-2 text-xs font-bold tracking-widest text-accent-300 uppercase">Project overview</h2>
               <p className="text-base leading-relaxed text-fg/90">{project.description}</p>
             </section>
+            {project.tags.length > 0 && (
+              <section aria-labelledby="tags">
+                <h2 id="tags" className="mb-2 text-xs font-bold tracking-widest text-accent-300 uppercase">Tags</h2>
+                <ul className="flex flex-wrap gap-2">
+                  {project.tags.map((t) => <li key={t}><Badge tone="gold" className="px-3 py-1">{t}</Badge></li>)}
+                </ul>
+              </section>
+            )}
             {project.tech.length > 0 && (
               <section aria-labelledby="tech">
                 <h2 id="tech" className="mb-2 text-xs font-bold tracking-widest text-accent-300 uppercase">Technologies used</h2>
