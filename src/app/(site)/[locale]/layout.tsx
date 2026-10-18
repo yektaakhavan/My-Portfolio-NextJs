@@ -16,7 +16,8 @@ const SITE_URL = process.env.SITE_URL ?? "http://localhost:3000";
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
-export const dynamicParams = false; // /xx/... → 404 for unknown languages
+// unknown languages (/xx/...) are rejected with notFound() in the layout below.
+// (Do NOT set dynamicParams = false here: it makes revalidated pages return 404 instead of regenerating.)
 
 export const viewport: Viewport = {
   colorScheme: "dark light",

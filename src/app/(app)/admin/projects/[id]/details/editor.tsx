@@ -9,6 +9,21 @@ import { api } from "@/lib/api";
 
 const MAX = 20000;
 
+const TEMPLATE_FA = `## چه چیزی ساختم
+خلاصه‌ی کوتاهی از هدف و کاری که پروژه انجام می‌دهد.
+
+## چالش‌ها
+- سخت‌ترین مشکلی که با آن روبه‌رو شدم و چطور حلش کردم
+- چیزی که طبق برنامه پیش نرفت
+
+## چه چیزی یاد گرفتم
+- یک ابزار یا تکنیک جدید
+- کاری که دفعه‌ی بعد متفاوت انجام می‌دهم
+
+## نتیجه
+نتیجه‌ی نهایی چه بود.
+`;
+
 const TEMPLATE = `## What I built
 A short summary of the goal and what the project does.
 
@@ -42,13 +57,16 @@ const TOOLS: { id: ToolId; label: string; icon?: IconName; text?: string }[] = [
  * Write-up editor for one project. Plain Markdown with a formatting toolbar and a live preview:
  * no hidden HTML, so what you see in the preview is exactly what visitors get.
  */
-export function DetailsEditor({ project }: { project: { id: number; title: string; slug: string; details: string } }) {
+export function DetailsEditor({ project }: { project: { id: number; title: string; slug: string; details: string; faDetails: string } }) {
   const toast = useToast();
   const ref = useRef<HTMLTextAreaElement>(null);
-  const [text, setText] = useState(project.details);
-  const [saved, setSaved] = useState(project.details);
+  const [lang, setLang] = useState<"en" | "fa">("en");
+  const [texts, setTexts] = useState({ en: project.details, fa: project.faDetails });
+  const [saved, setSaved] = useState({ en: project.details, fa: project.faDetails });
   const [saving, setSaving] = useState(false);
-  const dirty = text !== saved;
+  const text = texts[lang];
+  const setText = (v: string) => setTexts((t) => ({ ...t, [lang]: v }));
+  const dirty = texts.en !== saved.en || texts.fa !== saved.fa;
 
   // warn before closing the tab with unsaved work
   useEffect(() => {
@@ -89,7 +107,8 @@ export function DetailsEditor({ project }: { project: { id: number; title: strin
     });
   const insertTemplate = () =>
     edit((v) => {
-      const value = v.trim() ? `${v.replace(/\s+$/, "")}\n\n${TEMPLATE}` : TEMPLATE;
+      const tpl = lang === "fa" ? TEMPLATE_FA : TEMPLATE;
+      const value = v.trim() ? `${v.replace(/\s+$/, "")}\n\n${tpl}` : tpl;
       return { value, s: value.length, e: value.length };
     });
 
@@ -97,8 +116,11 @@ export function DetailsEditor({ project }: { project: { id: number; title: strin
     if (saving) return;
     setSaving(true);
     try {
-      await api(`/api/admin/projects/${project.id}`, { method: "PUT", json: { details: text } });
-      setSaved(text);
+      await api(`/api/admin/projects/${project.id}`, {
+        method: "PUT",
+        json: { details: texts.en, translations: { fa: { details: texts.fa } } },
+      });
+      setSaved(texts);
       toast({ tone: "success", title: "Write-up saved", detail: "It is live on the project page." });
     } catch (e) {
       toast({ tone: "error", title: "Could not save", detail: e instanceof Error ? e.message : undefined });
@@ -128,12 +150,15 @@ export function DetailsEditor({ project }: { project: { id: number; title: strin
           <h2 className="mt-1 font-display text-2xl text-fg">Write-up: {project.title}</h2>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             Add anything you want visitors to know: what you learned, the challenges, decisions, results. It appears on the project&apos;s own page under
-            &ldquo;Behind the project&rdquo;. Leave it empty to hide that section.
+            &ldquo;Behind the project&rdquo;. Leave it empty to hide that section. Write an English and a Persian version; if the Persian one is empty, Persian visitors see the English text.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button href={`/projects/${project.slug}`} external variant="outline" size="sm" icon="eye">
             View public page
+          </Button>
+          <Button href={`/fa/projects/${project.slug}`} external variant="outline" size="sm" icon="eye">
+            View Persian page
           </Button>
           <Button size="sm" icon="check" loading={saving} onClick={save}>
             Save write-up
@@ -144,6 +169,24 @@ export function DetailsEditor({ project }: { project: { id: number; title: strin
       <p role="status" className="text-xs font-semibold text-muted">
         {dirty ? "● Unsaved changes" : "✓ All changes saved"}
       </p>
+
+      <div role="group" aria-label="Language of the write-up" className="flex gap-2">
+        {(["en", "fa"] as const).map((l) => (
+          <button
+            key={l}
+            type="button"
+            aria-pressed={lang === l}
+            onClick={() => setLang(l)}
+            className={
+              "min-h-9 rounded-full px-4 py-1.5 text-xs font-semibold transition " +
+              (lang === l ? "bg-accent-400 text-on-accent" : "border border-muted/75 text-muted hover:text-fg")
+            }
+          >
+            {l === "en" ? "English" : "فارسی (Persian)"}
+            {texts[l].trim() ? <span className="sr-only"> — has text</span> : null}
+          </button>
+        ))}
+      </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card className="space-y-3 p-4 sm:p-5">
@@ -170,10 +213,11 @@ export function DetailsEditor({ project }: { project: { id: number; title: strin
             </button>
           </div>
 
-          <Field label="Write-up (Markdown)" hint={`${text.length.toLocaleString()} / ${MAX.toLocaleString()} characters`}>
+          <Field label={lang === "fa" ? "Write-up in Persian (Markdown)" : "Write-up in English (Markdown)"} hint={`${text.length.toLocaleString()} / ${MAX.toLocaleString()} characters`}>
             <Textarea
               ref={ref}
-              dir="auto"
+              dir={lang === "fa" ? "rtl" : "ltr"}
+              lang={lang}
               value={text}
               maxLength={MAX}
               onChange={(e) => setText(e.target.value)}

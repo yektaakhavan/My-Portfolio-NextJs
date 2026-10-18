@@ -30,18 +30,19 @@ const getProfileRaw = cache(async (): Promise<Profile | null> => {
 });
 
 /** `locale` picks the language of bio / title / experience… (falls back to English where not translated). */
-export const getProfile = cache(async (locale: Locale = "en"): Promise<Profile | null> => {
+export const getProfile = cache(async (locale?: Locale): Promise<Profile | null> => {
   const p = await getProfileRaw();
-  return p ? localizeProfile(p, locale) : null;
+  // no locale = the admin area: raw row including every translation
+  return p && locale ? localizeProfile(p, locale) : p;
 });
 
 const getSkillsRaw = cache(async (): Promise<Skill[]> => {
   return db.select().from(skills).orderBy(asc(skills.sort), asc(skills.id));
 });
 
-export const getSkills = cache(async (locale: Locale = "en"): Promise<Skill[]> => {
+export const getSkills = cache(async (locale?: Locale): Promise<Skill[]> => {
   const all = await getSkillsRaw();
-  return all.map((x) => localizeSkill(x, locale));
+  return locale ? all.map((x) => localizeSkill(x, locale)) : all;
 });
 
 const getProjectsRaw = cache(async (): Promise<Project[]> => {
@@ -49,9 +50,9 @@ const getProjectsRaw = cache(async (): Promise<Project[]> => {
   return rows.map(toProject);
 });
 
-export const getProjects = cache(async (locale: Locale = "en"): Promise<Project[]> => {
+export const getProjects = cache(async (locale?: Locale): Promise<Project[]> => {
   const all = await getProjectsRaw();
-  return all.map((x) => localizeProject(x, locale));
+  return locale ? all.map((x) => localizeProject(x, locale)) : all;
 });
 
 export const getProjectBySlug = cache(async (slug: string, locale: Locale = "en"): Promise<Project | null> => {

@@ -4,7 +4,7 @@ import { projects } from "@/db/schema";
 import { badRequest } from "@/lib/auth";
 import { toProject } from "@/lib/data";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
-import { parseImages, parseProjectTranslations, strList } from "@/lib/admin-input";
+import { mergeTranslations, parseImages, parseProjectTranslations, strList } from "@/lib/admin-input";
 import { cleanText, safeHttpUrl } from "@/lib/validators";
 import { slugify } from "@/lib/utils";
 
@@ -57,7 +57,7 @@ export async function PUT(
       description: String(body.description ?? existing.description).trim(),
       // only touched when the write-up editor sends it, so editing other fields never wipes the write-up
       details: "details" in body ? cleanText(body.details, 20000) : existing.details,
-      translations: "translations" in body ? parseProjectTranslations(body.translations) : existing.translations,
+      translations: "translations" in body ? mergeTranslations(existing.translations, parseProjectTranslations(body.translations)) : existing.translations,
       tags: Array.isArray(body.tags) ? strList(body.tags, 12, 40) : existing.tags,
       tech: Array.isArray(body.tech) ? strList(body.tech, 20, 40) : existing.tech,
       liveUrl: "liveUrl" in body ? safeHttpUrl(body.liveUrl) : existing.liveUrl,

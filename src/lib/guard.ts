@@ -1,5 +1,4 @@
 import { revalidatePath } from "next/cache";
-import { LOCALES } from "@/i18n/config";
 import { getCurrentUser, unauthorized } from "./auth";
 
 /** Rejects cross-site browser requests (extra layer on top of SameSite=Lax cookies). */
@@ -24,6 +23,7 @@ export async function adminGuard(req: Request): Promise<Response | null> {
 
 /** Public pages are cached (ISR); call after any admin change so visitors see it immediately. */
 export function revalidatePublic() {
-  // every language version of every public page (the default language is served from /en or /fa internally)
-  for (const l of LOCALES) revalidatePath(`/${l}`, "layout");
+  // Every language version of every public page. The path must be the layout's REAL route pattern,
+  // including the "(site)" route-group folder name — "/[locale]" alone does not match and silently does nothing.
+  revalidatePath("/(site)/[locale]", "layout");
 }

@@ -30,6 +30,9 @@ type FormState = {
   images: ProjectImage[];
   accent: number;
   featured: boolean;
+  faTitle: string;
+  faDescription: string;
+  faTags: string;
 };
 
 const EMPTY: FormState = {
@@ -42,6 +45,9 @@ const EMPTY: FormState = {
   images: [],
   accent: 0,
   featured: false,
+  faTitle: "",
+  faDescription: "",
+  faTags: "",
 };
 
 function toForm(p: Project): FormState {
@@ -52,9 +58,13 @@ function toForm(p: Project): FormState {
     tech: p.tech.join(", "),
     liveUrl: p.liveUrl,
     githubUrl: p.githubUrl,
-    images: p.images,
+    // an auto-generated alt ("X — screenshot 1") is shown as empty so you can write a real one
+    images: p.images.map((i) => ({ url: i.url, alt: i.auto ? "" : i.alt })),
     accent: p.accent,
     featured: p.featured,
+    faTitle: p.translations?.fa?.title ?? "",
+    faDescription: p.translations?.fa?.description ?? "",
+    faTags: (p.translations?.fa?.tags ?? []).join("، "),
   };
 }
 
@@ -102,6 +112,14 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
       images: form.images,
       accent: form.accent,
       featured: form.featured,
+      // only these three Persian fields are sent; the Persian write-up is edited on its own page and is kept
+      translations: {
+        fa: {
+          title: form.faTitle.trim(),
+          description: form.faDescription.trim(),
+          tags: form.faTags.split(/[,،]/).map((x) => x.trim()).filter(Boolean),
+        },
+      },
     };
     try {
       if (modal?.mode === "edit") {
@@ -257,6 +275,21 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
           <Field label="Description" required>
             <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="What does this project do?" required />
           </Field>
+          <fieldset className="space-y-3 rounded-xl border border-line p-4">
+            <legend className="px-2 text-sm font-semibold text-fg">
+              Persian version <span lang="fa">(فارسی)</span> — optional
+            </legend>
+            <p className="text-xs text-muted">Shown on the Persian pages. Leave empty to show the English text there.</p>
+            <Field label="Title (Persian)">
+              <Input dir="rtl" lang="fa" value={form.faTitle} onChange={(e) => setForm((f) => ({ ...f, faTitle: e.target.value }))} />
+            </Field>
+            <Field label="Description (Persian)">
+              <Textarea dir="rtl" lang="fa" value={form.faDescription} onChange={(e) => setForm((f) => ({ ...f, faDescription: e.target.value }))} />
+            </Field>
+            <Field label="Filter tags (Persian)" hint="Comma separated.">
+              <Input dir="rtl" lang="fa" value={form.faTags} onChange={(e) => setForm((f) => ({ ...f, faTags: e.target.value }))} />
+            </Field>
+          </fieldset>
           <Field label="Tech stack" hint="Comma separated, e.g. React, TypeScript">
             <Input value={form.tech} onChange={(e) => setForm((f) => ({ ...f, tech: e.target.value }))} placeholder="React, TypeScript, Tailwind CSS" />
           </Field>

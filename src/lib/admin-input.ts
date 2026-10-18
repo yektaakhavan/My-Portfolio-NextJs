@@ -71,3 +71,8 @@ export function parseSkillTranslations(value: unknown): Translations<SkillText> 
   if (!fa || typeof fa !== "object") return {};
   return { fa: typeof fa.name === "string" ? { name: txt(fa.name, 80) } : {} };
 }
+
+/** Keys that the new value does not mention keep their old value (e.g. saving the project form never wipes the Persian write-up). */
+export function mergeTranslations<T>(existing: Translations<T> | null | undefined, incoming: Translations<T>): Translations<T> {
+  return { ...existing, fa: { ...existing?.fa, ...incoming.fa } };
+}

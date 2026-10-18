@@ -9,6 +9,7 @@ import type { Profile } from "@/lib/types";
 import { useToast } from "@/components/toast";
 import { Icon } from "@/components/icons";
 import { Button, Card, Field, Input, Textarea } from "@/components/ui";
+import { EMPTY_FA, PersianSection, type FaDraft } from "./persian-section";
 
 type ExpDraft = { role: string; company: string; period: string; pointsText: string };
 type EduDraft = { degree: string; school: string; period: string };
@@ -76,6 +77,21 @@ function fromProfile(p: Profile | null): FormState {
   };
 }
 
+function faFromProfile(p: Profile | null): FaDraft {
+  const t = p?.translations?.fa;
+  if (!t) return EMPTY_FA;
+  return {
+    name: t.name ?? "",
+    title: t.title ?? "",
+    tagline: t.tagline ?? "",
+    location: t.location ?? "",
+    bioText: (t.bio ?? []).join("\n\n"),
+    traitsText: (t.traits ?? []).join("، "),
+    experience: (t.experience ?? []).map((e) => ({ ...e, pointsText: e.points.join("\n") })),
+    education: (t.education ?? []).map((e) => ({ ...e })),
+  };
+}
+
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
     <Card className="p-5 sm:p-6">
@@ -91,6 +107,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
 export default function ProfileClient({ initial }: { initial: Profile | null }) {
   const toast = useToast();
   const [form, setForm] = useState<FormState | null>(fromProfile(initial));
+  const [fa, setFa] = useState<FaDraft>(faFromProfile(initial));
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(initial ? new Date(initial.updatedAt).toLocaleString() : null);
 
@@ -142,6 +159,22 @@ export default function ProfileClient({ initial }: { initial: Profile | null }) 
       education: form.education
         .filter((e) => e.degree.trim())
         .map((e) => ({ degree: e.degree.trim(), school: e.school.trim(), period: e.period.trim() })),
+      translations: {
+        fa: {
+          name: fa.name.trim(),
+          title: fa.title.trim(),
+          tagline: fa.tagline.trim(),
+          location: fa.location.trim(),
+          bio: fa.bioText.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean),
+          traits: fa.traitsText.split(/[,،]/).map((x) => x.trim()).filter(Boolean),
+          experience: fa.experience
+            .filter((e) => e.role.trim() || e.company.trim())
+            .map((e) => ({ role: e.role.trim(), company: e.company.trim(), period: e.period.trim(), points: e.pointsText.split("\n").map((x) => x.trim()).filter(Boolean) })),
+          education: fa.education
+            .filter((e) => e.degree.trim())
+            .map((e) => ({ degree: e.degree.trim(), school: e.school.trim(), period: e.period.trim() })),
+        },
+      },
     };
     try {
       const d = await api<{ profile: Profile }>("/api/admin/profile", { method: "PUT", json: payload });
@@ -325,6 +358,8 @@ export default function ProfileClient({ initial }: { initial: Profile | null }) 
           </Button>
         </div>
       </Section>
+
+      <PersianSection fa={fa} setFa={setFa} english={{ experience: form.experience, education: form.education }} />
 
       <Section title="Resume" hint="Tags shown under the resume card; the resume page renders live from your data.">
         <div className="grid gap-4 sm:grid-cols-2">

@@ -13,10 +13,10 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
   const n = Number(id);
   if (!Number.isInteger(n)) notFound();
   const [p] = await db
-    .select({ id: projects.id, title: projects.title, slug: projects.slug, details: projects.details })
+    .select({ id: projects.id, title: projects.title, slug: projects.slug, details: projects.details, translations: projects.translations })
     .from(projects)
     .where(eq(projects.id, n))
     .limit(1);
   if (!p) notFound();
-  return <DetailsEditor project={p} />;
+  return <DetailsEditor project={{ id: p.id, title: p.title, slug: p.slug, details: p.details, faDetails: p.translations?.fa?.details ?? "" }} />;
 }

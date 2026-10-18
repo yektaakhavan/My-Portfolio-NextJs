@@ -26,8 +26,13 @@ const ICON_OPTIONS = [
   "git", "github", "figma", "responsive", "comm", "team", "problem", "spark",
 ];
 
-type FormState = { name: string; category: string; level: string; icon: string };
-const EMPTY: FormState = { name: "", category: "frontend", level: "Advanced", icon: "spark" };
+type FormState = { name: string; category: string; level: string; icon: string; faName: string };
+function toPayload(f: FormState) {
+  const { faName, ...rest } = f;
+  return { ...rest, translations: { fa: { name: faName.trim() } } };
+}
+
+const EMPTY: FormState = { name: "", category: "frontend", level: "Advanced", icon: "spark", faName: "" };
 
 export default function SkillsClient({ initial }: { initial: Skill[] }) {
   const toast = useToast();
@@ -55,7 +60,7 @@ export default function SkillsClient({ initial }: { initial: Skill[] }) {
     setModal({ mode: "create" });
   }
   function openEdit(skill: Skill) {
-    setForm({ name: skill.name, category: skill.category, level: skill.level, icon: skill.icon });
+    setForm({ name: skill.name, category: skill.category, level: skill.level, icon: skill.icon, faName: skill.translations?.fa?.name ?? "" });
     setModal({ mode: "edit", skill });
   }
 
@@ -66,12 +71,12 @@ export default function SkillsClient({ initial }: { initial: Skill[] }) {
       if (modal?.mode === "edit") {
         const d = await api<{ skill: Skill }>(`/api/admin/skills/${modal.skill.id}`, {
           method: "PUT",
-          json: form,
+          json: toPayload(form),
         });
         setSkills((s) => (s ?? []).map((x) => (x.id === d.skill.id ? d.skill : x)));
         toast({ tone: "success", title: "Skill updated" });
       } else {
-        const d = await api<{ skill: Skill }>("/api/admin/skills", { method: "POST", json: form });
+        const d = await api<{ skill: Skill }>("/api/admin/skills", { method: "POST", json: toPayload(form) });
         setSkills((s) => [...(s ?? []), d.skill]);
         toast({ tone: "success", title: "Skill added", detail: d.skill.name });
       }
@@ -188,6 +193,9 @@ export default function SkillsClient({ initial }: { initial: Skill[] }) {
         <form id="skill-form" onSubmit={save} className="space-y-4">
           <Field label="Name">
             <Input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. TypeScript" required />
+          </Field>
+          <Field label="Name in Persian (فارسی)" hint="Optional. Useful for soft skills like “Teamwork”; leave empty for tool names such as Git.">
+            <Input dir="rtl" lang="fa" value={form.faName} onChange={(e) => setForm((f) => ({ ...f, faName: e.target.value }))} />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Category">

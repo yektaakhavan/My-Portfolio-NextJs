@@ -11,12 +11,16 @@ const CONTENT_BASE: Locale = "en";
 const str = (v: unknown): v is string => typeof v === "string" && v.trim() !== "";
 const list = <T,>(v: unknown): v is T[] => Array.isArray(v) && v.length > 0;
 
+/*
+ * These return the text in ONE language and drop `translations`, so a visitor's page never carries
+ * the other language's text along (smaller pages). The admin area reads the raw rows instead.
+ */
 export function localizeProfile(p: Profile, locale: Locale): Profile {
-  if (locale === CONTENT_BASE) return p;
-  const t = p.translations?.[locale];
-  if (!t) return p;
+  const t = locale === CONTENT_BASE ? undefined : p.translations?.[locale];
+  if (!t) return { ...p, translations: {} };
   return {
     ...p,
+    translations: {},
     name: str(t.name) ? t.name : p.name,
     title: str(t.title) ? t.title : p.title,
     tagline: str(t.tagline) ? t.tagline : p.tagline,
@@ -34,6 +38,7 @@ export function localizeProject(p: Project, locale: Locale): Project {
   const dict = getDictionary(locale);
   return {
     ...p,
+    translations: {},
     title,
     description: t && str(t.description) ? t.description : p.description,
     details: t && str(t.details) ? t.details : p.details,
@@ -47,7 +52,7 @@ export function localizeProject(p: Project, locale: Locale): Project {
 
 export function localizeSkill(s: Skill, locale: Locale): Skill {
   const t = locale === CONTENT_BASE ? undefined : s.translations?.[locale];
-  return t && str(t.name) ? { ...s, name: t.name } : s;
+  return { ...s, translations: {}, name: t && str(t.name) ? t.name : s.name };
 }
 
 export { DEFAULT_LOCALE };
