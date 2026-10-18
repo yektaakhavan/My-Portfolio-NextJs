@@ -6,6 +6,8 @@ import type { ProjectImage } from "@/lib/types";
 import { Icon } from "./icons";
 import { Lightbox } from "./lightbox";
 import { Button } from "./ui";
+import { fmt, formatNumber } from "@/i18n";
+import { useI18n } from "@/i18n/provider";
 
 /** Lightweight responsive <img>: uploaded files have a 640px and a 1600px version. */
 export function ProjectImg({
@@ -44,6 +46,7 @@ export function ScreenshotsButton({
 }) {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
+  const { t, locale } = useI18n();
   if (!images.length) return null;
   return (
     <>
@@ -57,7 +60,8 @@ export function ScreenshotsButton({
         }}
         aria-haspopup="dialog"
       >
-        Screenshots ({images.length})<span className="sr-only"> of {title}</span>
+        {fmt(t.projects.screenshots, { n: formatNumber(locale, images.length) })}
+        <span className="sr-only">{fmt(t.projects.screenshotsOf, { title })}</span>
       </Button>
       {open && <Lightbox title={title} items={images} index={index} onClose={() => setOpen(false)} onNav={setIndex} />}
     </>
@@ -67,6 +71,7 @@ export function ScreenshotsButton({
 /** Grid of screenshots on the project page; every thumbnail is a real button that opens the lightbox. */
 export function ScreenshotGrid({ title, images }: { title: string; images: ProjectImage[] }) {
   const [index, setIndex] = useState<number | null>(null);
+  const { t, locale } = useI18n();
   return (
     <>
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -76,7 +81,7 @@ export function ScreenshotGrid({ title, images }: { title: string; images: Proje
               type="button"
               onClick={() => setIndex(idx)}
               aria-haspopup="dialog"
-              aria-label={`Enlarge screenshot ${idx + 1} of ${images.length}: ${img.alt}`}
+              aria-label={fmt(t.projects.enlargeLabel, { i: formatNumber(locale, idx + 1), n: formatNumber(locale, images.length), alt: img.alt })}
               className="group relative block aspect-video w-full overflow-hidden rounded-2xl border border-line bg-canvas"
             >
               <ProjectImg image={img} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
@@ -85,7 +90,7 @@ export function ScreenshotGrid({ title, images }: { title: string; images: Proje
                 className="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 backdrop-blur-xs transition group-hover:opacity-100 group-focus-visible:opacity-100"
               >
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3.5 py-1.5 text-xs font-semibold text-accent-300">
-                  <Icon name="eye" className="h-4 w-4" /> Enlarge
+                  <Icon name="eye" className="h-4 w-4" /> {t.projects.enlarge}
                 </span>
               </span>
             </button>

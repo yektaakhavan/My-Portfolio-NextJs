@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { publicMessages } from "@/db/schema";
 import { badRequest } from "@/lib/auth";
-import { gateSubmission, readJson } from "@/lib/submissions";
+import { gateSubmission, localeOf, readJson } from "@/lib/submissions";
 import { isValidEmail } from "@/lib/utils";
 import { cleanText, countLinks } from "@/lib/validators";
 
@@ -14,7 +14,8 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(req: Request) {
   const body = await readJson(req);
-  if (!body) return badRequest("Invalid or too large request.");
+  if (!body) return badRequest(localeOf(null).api.invalidRequest);
+  const t = localeOf(body).api;
 
   const gate = await gateSubmission(req, body, publicMessages);
   if (!gate.ok) return gate.response;
@@ -24,13 +25,13 @@ export async function POST(req: Request) {
   const email = cleanText(body.email, 160);
   const text = cleanText(body.body, 800);
 
-  if (name.length < 2) return badRequest("Please enter your name (at least 2 characters).");
-  if (email && !isValidEmail(email)) return badRequest("That email address doesn't look right.");
-  if (text.length < 10) return badRequest("Your message should be at least 10 characters.");
+  if (name.length < 2) return badRequest(t.namePublic);
+  if (email && !isValidEmail(email)) return badRequest(t.emailPublic);
+  if (text.length < 10) return badRequest(t.body);
   if (body.consent !== true) {
-    return badRequest("Please agree to the publication of your name and message after review.");
+    return badRequest(t.consentPublic);
   }
-  if (countLinks(text) > 1) return badRequest("To keep the page spam-free, please remove links from your message.");
+  if (countLinks(text) > 1) return badRequest(t.linksPublic);
 
   await db.insert(publicMessages).values({
     name,

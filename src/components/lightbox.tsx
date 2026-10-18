@@ -3,6 +3,8 @@
 import { useRef } from "react";
 import { Icon } from "./icons";
 import { useFocusTrap } from "./use-focus-trap";
+import { fmt } from "@/i18n";
+import { useI18n } from "@/i18n/provider";
 
 export type LightboxItem = { url: string; alt: string };
 
@@ -21,6 +23,7 @@ export function Lightbox({
   title: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
   useFocusTrap(true, root, onClose);
 
   const item = items[index];
@@ -33,7 +36,7 @@ export function Lightbox({
       ref={root}
       role="dialog"
       aria-modal="true"
-      aria-label={`${title} — image viewer`}
+      aria-label={fmt(t.lightbox.label, { title })}
       tabIndex={-1}
       onKeyDown={(e) => {
         if (e.key === "ArrowRight") next();
@@ -44,8 +47,8 @@ export function Lightbox({
       <button
         type="button"
         onClick={onClose}
-        aria-label="Close image viewer"
-        className="absolute top-5 right-5 rounded-full border border-muted/75 bg-surface p-3 text-muted transition hover:text-fg"
+        aria-label={t.lightbox.close}
+        className="absolute top-5 end-5 rounded-full border border-muted/75 bg-surface p-3 text-muted transition hover:text-fg"
       >
         <Icon name="x" className="h-5 w-5" />
       </button>
@@ -54,16 +57,16 @@ export function Lightbox({
           <button
             type="button"
             onClick={prev}
-            aria-label="Previous image"
-            className="absolute left-3 rounded-full border border-muted/75 bg-surface p-3 text-muted transition hover:text-fg sm:left-6"
+            aria-label={t.lightbox.prev}
+            className="absolute start-3 rounded-full border border-muted/75 bg-surface p-3 text-muted transition hover:text-fg sm:start-6"
           >
-            <Icon name="arrow-right" className="h-5 w-5 rotate-180" />
+            <Icon name="arrow-left" className="h-5 w-5" />
           </button>
           <button
             type="button"
             onClick={next}
-            aria-label="Next image"
-            className="absolute right-3 rounded-full border border-muted/75 bg-surface p-3 text-muted transition hover:text-fg sm:right-6"
+            aria-label={t.lightbox.next}
+            className="absolute end-3 rounded-full border border-muted/75 bg-surface p-3 text-muted transition hover:text-fg sm:end-6"
           >
             <Icon name="arrow-right" className="h-5 w-5" />
           </button>
@@ -78,9 +81,7 @@ export function Lightbox({
         />
         <figcaption className="mt-3 text-center text-sm text-muted" aria-live="polite">
           {item.alt}
-          <span className="ml-2">
-            ({index + 1} of {items.length})
-          </span>
+          <span className="ms-2">{fmt(t.lightbox.position, { i: index + 1, n: items.length })}</span>
         </figcaption>
       </figure>
     </div>

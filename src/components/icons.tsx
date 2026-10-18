@@ -38,10 +38,12 @@ export type IconName =
   | "upload"
   | "message"
   | "shield"
+  | "arrow-left"
   | "grip"
   | "file-text";
 
 const stroke: Record<string, React.ReactNode> = {
+  "arrow-left": <path d="M19 12H5M11 6l-6 6 6 6" />,
   grip: (
     <>
       {[9, 15].flatMap((x) => [6, 12, 18].map((y) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.3" fill="currentColor" stroke="none" />))}
@@ -246,6 +248,8 @@ export function Icon({
   ...props
 }: { name: IconName; className?: string } & SVGProps<SVGSVGElement>) {
   const fillPath = fill[name];
+  // arrows that mean "forward/back" must point the other way in right-to-left languages
+  if (name === "arrow-right" || name === "arrow-left") className = `${className} rtl:-scale-x-100`;
   if (fillPath) {
     return (
       <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden {...props}>

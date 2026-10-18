@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { skills } from "@/db/schema";
 import { badRequest, getCurrentUser, unauthorized } from "@/lib/auth";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
+import { parseSkillTranslations } from "@/lib/admin-input";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export async function GET() {
 export async function POST(req: Request) {
   const denied = await adminGuard(req);
   if (denied) return denied;
-  let body: { name?: string; category?: string; level?: string; icon?: string };
+  let body: { name?: string; category?: string; level?: string; icon?: string; translations?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
       name,
       category,
       level,
+      translations: parseSkillTranslations(body.translations),
       icon: (body.icon ?? "").trim() || "spark",
       sort: (top?.m ?? 0) + 1,
     })

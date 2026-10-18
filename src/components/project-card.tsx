@@ -1,7 +1,11 @@
-import Link from "next/link";
+"use client";
+
 import { cn } from "@/lib/utils";
 import { monogram, type Project } from "@/lib/types";
+import { fmt } from "@/i18n";
+import { useI18n } from "@/i18n/provider";
 import { Icon } from "./icons";
+import { LocaleLink } from "./locale-link";
 import { ProjectImg, ScreenshotsButton } from "./project-media";
 import { Badge, Button, Card } from "./ui";
 
@@ -25,6 +29,7 @@ export function ProjectCard({
   as?: "h2" | "h3";
   maxTech?: number;
 }) {
+  const { t } = useI18n();
   const cover = p.images[0];
   const tags = p.tags.slice(0, MAX_COVER_TAGS);
   const tech = typeof maxTech === "number" ? p.tech.slice(0, maxTech) : p.tech;
@@ -45,15 +50,15 @@ export function ProjectCard({
           </span>
         )}
         {p.featured && (
-          <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
-            <Icon name="star" className="h-3 w-3 text-accent-400" /> Featured
+          <span className="absolute top-3 end-3 inline-flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur">
+            <Icon name="star" className="h-3 w-3 text-accent-400" /> {t.projects.featured}
           </span>
         )}
         {tags.length > 0 && (
-          <ul aria-label="Tags" className="absolute bottom-3 left-3 flex flex-wrap gap-1.5 pr-3">
-            {tags.map((t) => (
-              <li key={t} className="rounded-full bg-black/70 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur">
-                {t}
+          <ul aria-label={t.projects.tags} className="absolute bottom-3 start-3 flex flex-wrap gap-1.5 pe-3">
+            {tags.map((tag) => (
+              <li key={tag} className="rounded-full bg-black/70 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur">
+                {tag}
               </li>
             ))}
           </ul>
@@ -62,20 +67,22 @@ export function ProjectCard({
 
       {/* Caption — smaller text, fixed-height slots */}
       <div className="flex-1 px-5 pt-4">
-        <Heading className="line-clamp-1 h-7 font-display text-lg leading-7 text-fg">
-          <Link
+        <Heading dir="auto" className="line-clamp-1 h-7 font-display text-lg leading-7 text-fg">
+          <LocaleLink
             href={`/projects/${p.slug}`}
             className="card-link transition group-hover:text-accent-300 after:absolute after:inset-0 after:z-[1] after:content-['']"
           >
             {p.title}
-          </Link>
+          </LocaleLink>
         </Heading>
-        <p className="mt-1.5 line-clamp-2 h-10 text-xs leading-5 text-muted">{p.description}</p>
-        <ul aria-label="Technologies" className="mt-3 flex h-[3.375rem] flex-wrap content-start gap-1.5 overflow-hidden">
-          {tech.map((t) => (
-            <li key={t}>
+        <p dir="auto" className="mt-1.5 line-clamp-2 h-10 text-xs leading-5 text-muted">
+          {p.description}
+        </p>
+        <ul aria-label={t.projects.technologies} className="mt-3 flex h-[3.375rem] flex-wrap content-start gap-1.5 overflow-hidden">
+          {tech.map((item) => (
+            <li key={item}>
               <Badge tone="neutral" className="h-6">
-                {t}
+                {item}
               </Badge>
             </li>
           ))}
@@ -85,16 +92,19 @@ export function ProjectCard({
       {/* Actions sit above the stretched link (z-10) and have room for exactly two rows */}
       <div className="relative z-10 flex h-24 flex-wrap content-start gap-2 border-t border-line px-5 pt-3">
         <Button href={`/projects/${p.slug}`} size="sm" icon="eye">
-          Details<span className="sr-only"> of {p.title}</span>
+          {t.projects.details}
+          <span className="sr-only">{fmt(t.projects.detailsOf, { title: p.title })}</span>
         </Button>
         {p.liveUrl && (
           <Button href={p.liveUrl} external size="sm" variant="outline" icon="external">
-            Live demo<span className="sr-only"> of {p.title}</span>
+            {t.projects.liveDemo}
+            <span className="sr-only">{fmt(t.projects.detailsOf, { title: p.title })}</span>
           </Button>
         )}
         {p.githubUrl && (
           <Button href={p.githubUrl} external size="sm" variant="soft" icon="github">
-            Source<span className="sr-only"> code of {p.title}</span>
+            {t.projects.source}
+            <span className="sr-only">{fmt(t.projects.sourceOf, { title: p.title })}</span>
           </Button>
         )}
         <ScreenshotsButton title={p.title} images={p.images} />

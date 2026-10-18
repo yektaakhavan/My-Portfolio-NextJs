@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { skills } from "@/db/schema";
 import { badRequest, getCurrentUser, unauthorized } from "@/lib/auth";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
+import { parseSkillTranslations } from "@/lib/admin-input";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export async function PUT(
   const denied = await adminGuard(req);
   if (denied) return denied;
   const { id } = await params;
-  let body: { name?: string; category?: string; level?: string; icon?: string };
+  let body: { name?: string; category?: string; level?: string; icon?: string; translations?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -31,7 +32,13 @@ export async function PUT(
 
   const [row] = await db
     .update(skills)
-    .set({ name, category, level, icon: (body.icon ?? "").trim() || "spark" })
+    .set({
+      name,
+      category,
+      level,
+      icon: (body.icon ?? "").trim() || "spark",
+      ...("translations" in body ? { translations: parseSkillTranslations(body.translations) } : {}),
+    })
     .where(eq(skills.id, Number(id)))
     .returning();
   if (!row) return Response.json({ error: "Skill not found" }, { status: 404 });

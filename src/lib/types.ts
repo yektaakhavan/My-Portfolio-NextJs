@@ -1,5 +1,6 @@
+import type { ProfileText, ProjectText, SkillText, Translations } from "@/db/schema";
 import type { ProjectImage } from "./images";
-export type { ProjectImage };
+export type { ProfileText, ProjectImage, ProjectText, SkillText, Translations };
 
 export type Experience = {
   role: string;
@@ -16,6 +17,7 @@ export type Profile = {
   tagline: string;
   avatarUrl: string;
   avatarAlt: string;
+  translations: Translations<ProfileText>;
   location: string;
   bio: string[];
   traits: string[];
@@ -38,6 +40,7 @@ export type Skill = {
   level: string;
   icon: string;
   sort: number;
+  translations: Translations<SkillText>;
 };
 
 export type Project = {
@@ -46,6 +49,7 @@ export type Project = {
   slug: string;
   description: string;
   details: string;
+  translations: Translations<ProjectText>;
   tags: string[];
   tech: string[];
   liveUrl: string;

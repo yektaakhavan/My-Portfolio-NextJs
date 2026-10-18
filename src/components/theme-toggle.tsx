@@ -3,6 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { Icon } from "./icons";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/i18n/provider";
 
 type Theme = "dark" | "light";
 
@@ -24,6 +25,7 @@ function applyTheme(next: Theme) {
 export function ThemeToggle({ className }: { className?: string }) {
   // The theme lives on <html data-theme>; this reads it without setState-in-effect.
   const theme = useSyncExternalStore(subscribe, getTheme, getServerTheme);
+  const { t } = useI18n();
 
   useEffect(() => {
     // follow the OS setting until the visitor makes an explicit choice
@@ -46,7 +48,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     } catch {}
   }
 
-  const label = theme === "light" ? "Switch to dark theme" : "Switch to light theme";
+  const label = theme === "light" ? t.common.themeToDark : t.common.themeToLight;
   return (
     <button
       type="button"

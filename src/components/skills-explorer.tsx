@@ -2,33 +2,38 @@
 
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { CATEGORY_LABELS, levelTone, type Skill } from "@/lib/types";
+import { levelTone, type Skill } from "@/lib/types";
+import { fmt, formatNumber } from "@/i18n";
+import { useI18n } from "@/i18n/provider";
 import { SkillMark } from "./icons";
 import { Badge, Button, Card, EmptyState, Input } from "./ui";
 
-const CATEGORIES = ["All", "Frontend", "Tools", "Soft"];
-const LEVELS = ["All", "Advanced", "Intermediate", "Beginner"];
+const CATEGORIES = ["all", "frontend", "tools", "soft"] as const;
+const LEVELS = ["all", "Advanced", "Intermediate", "Beginner"] as const;
 
 export function SkillsExplorer({ skills }: { skills: Skill[] }) {
-  const [category, setCategory] = useState("All");
-  const [level, setLevel] = useState("All");
+  const { t, locale } = useI18n();
+  const [category, setCategory] = useState<string>("all");
+  const [level, setLevel] = useState<string>("all");
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return skills.filter((s) => {
-      const matchCat = category === "All" || s.category === category.toLowerCase() || CATEGORY_LABELS[s.category] === category;
-      const matchLevel = level === "All" || s.level === level;
+      const matchCat = category === "all" || s.category === category;
+      const matchLevel = level === "all" || s.level === level;
       const matchSearch = !q || s.name.toLowerCase().includes(q) || s.category.toLowerCase().includes(q);
       return matchCat && matchLevel && matchSearch;
     });
   }, [skills, category, level, search]);
 
   const reset = () => {
-    setCategory("All");
-    setLevel("All");
+    setCategory("all");
+    setLevel("all");
     setSearch("");
   };
+  const catLabel = (c: string) => (c === "all" ? t.common.all : (t.categories[c] ?? c));
+  const levelLabel = (l: string) => (l === "all" ? t.common.all : (t.levels[l] ?? l));
 
   return (
     <div className="space-y-8">
@@ -36,11 +41,11 @@ export function SkillsExplorer({ skills }: { skills: Skill[] }) {
         <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="w-full sm:w-72">
             <label htmlFor="skill-search" className="mb-1.5 block text-xs font-semibold text-muted">
-              Search skills
+              {t.skills.search}
             </label>
-            <Input id="skill-search" type="search" placeholder="e.g. React, Git, SASS" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input id="skill-search" type="search" dir="auto" placeholder={t.skills.searchPlaceholder} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div role="group" aria-label="Filter by category" className="flex flex-wrap gap-1.5">
+          <div role="group" aria-label={t.skills.filterCategory} className="flex flex-wrap gap-1.5">
             {CATEGORIES.map((c) => (
               <button
                 key={c}
@@ -52,14 +57,14 @@ export function SkillsExplorer({ skills }: { skills: Skill[] }) {
                   category === c ? "bg-accent-400 text-on-accent shadow-md" : "border border-muted/75 bg-canvas/60 text-muted hover:text-fg",
                 )}
               >
-                {c}
+                {catLabel(c)}
               </button>
             ))}
           </div>
         </div>
-        <div role="group" aria-label="Filter by proficiency" className="flex flex-wrap items-center gap-2 border-t border-line pt-3 text-xs">
+        <div role="group" aria-label={t.skills.filterLevel} className="flex flex-wrap items-center gap-2 border-t border-line pt-3 text-xs">
           <span className="font-semibold text-muted" aria-hidden>
-            Proficiency:
+            {t.skills.proficiency}
           </span>
           {LEVELS.map((lvl) => (
             <button
@@ -72,24 +77,24 @@ export function SkillsExplorer({ skills }: { skills: Skill[] }) {
                 level === lvl ? "bg-brand-400/20 font-semibold text-brand-300 ring-1 ring-brand-400/50" : "text-muted hover:text-fg",
               )}
             >
-              {lvl}
+              {levelLabel(lvl)}
             </button>
           ))}
         </div>
       </Card>
 
       <p className="text-sm text-muted" role="status" aria-live="polite">
-        Showing {filtered.length} of {skills.length} skills
+        {fmt(t.skills.showing, { a: formatNumber(locale, filtered.length), b: formatNumber(locale, skills.length) })}
       </p>
 
       {filtered.length === 0 ? (
         <EmptyState
           icon="code"
-          title="No skills found"
-          description="Try clearing your search or filters to see all skills."
+          title={t.skills.emptyTitle}
+          description={t.skills.emptyText}
           action={
             <Button variant="outline" size="sm" onClick={reset}>
-              Reset filters
+              {t.skills.reset}
             </Button>
           }
         />
@@ -101,11 +106,13 @@ export function SkillsExplorer({ skills }: { skills: Skill[] }) {
                 <span aria-hidden className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-2 text-accent-300 ring-1 ring-line">
                   <SkillMark icon={s.icon} className="h-7 w-7" />
                 </span>
-                <h2 className="font-display text-base text-fg">{s.name}</h2>
-                <p className="mt-0.5 text-xs text-muted">{CATEGORY_LABELS[s.category] ?? s.category}</p>
+                <h2 dir="auto" className="font-display text-base text-fg">
+                  {s.name}
+                </h2>
+                <p className="mt-0.5 text-xs text-muted">{catLabel(s.category)}</p>
                 <Badge tone={levelTone(s.level)} className="mt-3">
-                  <span className="sr-only">Level: </span>
-                  {s.level}
+                  <span className="sr-only">{t.common.level} </span>
+                  {levelLabel(s.level)}
                 </Badge>
               </Card>
             </li>

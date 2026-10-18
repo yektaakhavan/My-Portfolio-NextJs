@@ -8,6 +8,25 @@ import {
   jsonb,
   index,
 } from "drizzle-orm/pg-core";
+import type { Locale } from "@/i18n/config";
+
+/**
+ * Translated versions of the content (the base columns hold the English text).
+ * Only the languages you actually write appear here; anything left empty falls back to English.
+ */
+export type ProfileText = {
+  name: string;
+  title: string;
+  tagline: string;
+  location: string;
+  bio: string[];
+  traits: string[];
+  experience: { role: string; company: string; period: string; points: string[] }[];
+  education: { degree: string; school: string; period: string }[];
+};
+export type ProjectText = { title: string; description: string; details: string; tags: string[] };
+export type SkillText = { name: string };
+export type Translations<T> = Partial<Record<Locale, Partial<T>>>;
 
 /** Images are stored either as a plain URL (legacy) or as { url, alt }. */
 export type StoredImage = string | { url: string; alt: string };
@@ -36,6 +55,7 @@ export const profile = pgTable("profile", {
   tagline: text("tagline").notNull(),
   avatarUrl: text("avatar_url").notNull(),
   avatarAlt: text("avatar_alt").notNull().default(""),
+  translations: jsonb("translations").$type<Translations<ProfileText>>().notNull().default({}),
   location: text("location").notNull().default(""),
   bio: jsonb("bio").$type<string[]>().notNull(),
   traits: jsonb("traits").$type<string[]>().notNull(),
@@ -62,6 +82,7 @@ export const skills = pgTable("skills", {
   level: text("level").notNull(), // Advanced | Intermediate | Beginner
   icon: text("icon").notNull().default("spark"),
   sort: integer("sort").notNull().default(0),
+  translations: jsonb("translations").$type<Translations<SkillText>>().notNull().default({}),
 });
 
 export const projects = pgTable("projects", {
@@ -71,6 +92,7 @@ export const projects = pgTable("projects", {
   description: text("description").notNull(),
   /** Optional long write-up (Markdown): what I learned, challenges, result… shown on the project page. */
   details: text("details").notNull().default(""),
+  translations: jsonb("translations").$type<Translations<ProjectText>>().notNull().default({}),
   tags: jsonb("tags").$type<string[]>().notNull(),
   tech: jsonb("tech").$type<string[]>().notNull(),
   liveUrl: text("live_url").notNull().default(""),

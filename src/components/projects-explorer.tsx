@@ -3,30 +3,35 @@
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/lib/types";
+import { fmt, formatNumber } from "@/i18n";
+import { useI18n } from "@/i18n/provider";
 import { Icon } from "./icons";
 import { ProjectCard } from "./project-card";
 import { Button, Card, EmptyState, Input } from "./ui";
 
+const ALL = ""; // language-neutral "All" marker
+
 export function ProjectsExplorer({ projects }: { projects: Project[] }) {
-  const [tag, setTag] = useState("All");
+  const { t, locale } = useI18n();
+  const [tag, setTag] = useState(ALL);
   const [search, setSearch] = useState("");
   const [featuredOnly, setFeaturedOnly] = useState(false);
 
-  const allTags = useMemo(() => ["All", ...Array.from(new Set(projects.flatMap((p) => p.tags)))], [projects]);
+  const allTags = useMemo(() => [ALL, ...Array.from(new Set(projects.flatMap((p) => p.tags)))], [projects]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return projects.filter((p) => {
-      const matchTag = tag === "All" || p.tags.includes(tag);
+      const matchTag = tag === ALL || p.tags.includes(tag);
       const matchFeatured = !featuredOnly || p.featured;
       const matchSearch =
-        !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tech.some((t) => t.toLowerCase().includes(q));
+        !q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tech.some((x) => x.toLowerCase().includes(q));
       return matchTag && matchFeatured && matchSearch;
     });
   }, [projects, tag, featuredOnly, search]);
 
   const reset = () => {
-    setTag("All");
+    setTag(ALL);
     setSearch("");
     setFeaturedOnly(false);
   };
@@ -37,30 +42,30 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
         <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="w-full sm:w-80">
             <label htmlFor="project-search" className="mb-1.5 block text-xs font-semibold text-muted">
-              Search projects
+              {t.projects.search}
             </label>
-            <Input id="project-search" type="search" placeholder="Title, description or technology" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input id="project-search" type="search" dir="auto" placeholder={t.projects.searchPlaceholder} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <div role="group" aria-label="Filter by tag" className="flex flex-wrap gap-1.5">
-            {allTags.map((t) => (
+          <div role="group" aria-label={t.projects.filterTag} className="flex flex-wrap gap-1.5">
+            {allTags.map((x) => (
               <button
-                key={t}
+                key={x || "all"}
                 type="button"
-                aria-pressed={tag === t}
-                onClick={() => setTag(t)}
+                aria-pressed={tag === x}
+                onClick={() => setTag(x)}
                 className={cn(
                   "min-h-9 rounded-full px-3.5 py-1.5 text-xs font-semibold transition",
-                  tag === t ? "bg-accent-400 text-on-accent shadow-md" : "border border-muted/75 bg-canvas/60 text-muted hover:text-fg",
+                  tag === x ? "bg-accent-400 text-on-accent shadow-md" : "border border-muted/75 bg-canvas/60 text-muted hover:text-fg",
                 )}
               >
-                {t}
+                {x === ALL ? t.common.all : x}
               </button>
             ))}
           </div>
         </div>
         <div className="flex items-center justify-between border-t border-line pt-3 text-xs">
           <span className="font-medium text-muted" role="status" aria-live="polite">
-            Showing {filtered.length} of {projects.length} projects
+            {fmt(t.projects.showing, { a: formatNumber(locale, filtered.length), b: formatNumber(locale, projects.length) })}
           </span>
           <button
             type="button"
@@ -72,7 +77,7 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
             )}
           >
             <Icon name="star" className="h-3.5 w-3.5" />
-            Featured only
+            {t.projects.featuredOnly}
           </button>
         </div>
       </Card>
@@ -80,11 +85,11 @@ export function ProjectsExplorer({ projects }: { projects: Project[] }) {
       {filtered.length === 0 ? (
         <EmptyState
           icon="folder"
-          title="No projects match your search"
-          description="Try adjusting your tag filters or search query."
+          title={t.projects.emptyTitle}
+          description={t.projects.emptyText}
           action={
             <Button variant="outline" size="sm" onClick={reset}>
-              Clear filters
+              {t.projects.clear}
             </Button>
           }
         />

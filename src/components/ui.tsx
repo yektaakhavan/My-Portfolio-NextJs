@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Icon, type IconName } from "./icons";
 import { useFocusTrap } from "./use-focus-trap";
+import { useI18n } from "@/i18n/provider";
 
 /* ---------------- Buttons ---------------- */
 
@@ -68,6 +69,7 @@ type LinkButtonProps = CommonButtonProps &
  */
 export function Button(props: ButtonProps | LinkButtonProps) {
   const { variant = "primary", size = "md", icon, className, children } = props;
+  const { t, href: localize } = useI18n();
   const classes = buttonClasses(variant, size, className);
   const iconEl = icon ? <Icon name={icon} className="h-4 w-4" /> : null;
 
@@ -85,12 +87,12 @@ export function Button(props: ButtonProps | LinkButtonProps) {
         >
           {iconEl}
           {children}
-          {newTab ? <span className="sr-only"> (opens in a new tab)</span> : null}
+          {newTab ? <span className="sr-only"> {t.common.opensInNewTab}</span> : null}
         </a>
       );
     }
     return (
-      <Link href={href} className={classes} {...rest}>
+      <Link href={localize(href)} className={classes} {...rest}>
         {iconEl}
         {children}
       </Link>
@@ -149,6 +151,7 @@ export function Field({
   required?: boolean;
   children: ReactNode;
 }) {
+  const { t } = useI18n();
   const uid = useId();
   const inputId = `f-${uid}`;
   const hintId = `h-${uid}`;
@@ -171,11 +174,11 @@ export function Field({
         {label}
         {required ? (
           <>
-            <span aria-hidden className="ml-0.5 text-danger">*</span>
-            <span className="sr-only"> (required)</span>
+            <span aria-hidden className="ms-0.5 text-danger">*</span>
+            <span className="sr-only"> {t.common.required}</span>
           </>
         ) : null}
-        {!required && hint === "optional" ? <span className="ml-1 font-normal">(optional)</span> : null}
+        {!required && hint === "optional" ? <span className="ms-1 font-normal">{t.common.optional}</span> : null}
       </label>
       {control}
       {hint && hint !== "optional" ? (
@@ -209,10 +212,10 @@ export function Textarea({ className, invalid, ...props }: TextareaHTMLAttribute
 export function Select({ className, children, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div className="relative">
-      <select className={cn(fieldBase, "appearance-none bg-canvas pr-9", className)} {...props}>
+      <select className={cn(fieldBase, "appearance-none bg-canvas pe-9", className)} {...props}>
         {children}
       </select>
-      <Icon name="chevron-down" className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-muted" />
+      <Icon name="chevron-down" className="pointer-events-none absolute top-1/2 end-3 h-4 w-4 -translate-y-1/2 text-muted" />
     </div>
   );
 }
@@ -243,7 +246,7 @@ export function Toggle({
         aria-hidden
         className={cn(
           "inline-block rounded-full shadow transition-transform",
-          checked ? "translate-x-[1.4rem] bg-on-accent" : "translate-x-1 bg-fg",
+          checked ? "translate-x-[1.4rem] bg-on-accent rtl:-translate-x-[1.4rem]" : "translate-x-1 bg-fg rtl:-translate-x-1",
         )}
         style={{ height: "1.1rem", width: "1.1rem" }}
       />
@@ -313,6 +316,7 @@ export function EmptyState({
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useI18n();
   return (
     <div
       role="alert"
@@ -321,11 +325,11 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
       <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-danger/15 text-danger">
         <Icon name="alert" className="h-6 w-6" />
       </div>
-      <p className="text-sm font-semibold text-fg">Something went wrong</p>
+      <p className="text-sm font-semibold text-fg">{t.common.somethingWrong}</p>
       <p className="mt-1 max-w-sm text-sm text-muted">{message}</p>
       {onRetry ? (
         <Button variant="soft" size="sm" icon="refresh" className="mt-4" onClick={onRetry}>
-          Try again
+          {t.common.tryAgain}
         </Button>
       ) : null}
     </div>
@@ -353,6 +357,7 @@ export function Modal({
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const uid = useId();
+  const { t } = useI18n();
   useFocusTrap(open, panel, onClose);
 
   if (!open) return null;
@@ -385,7 +390,7 @@ export function Modal({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close dialog"
+            aria-label={t.common.closeDialog}
             className="rounded-lg p-2 text-muted transition hover:bg-surface-2 hover:text-fg"
           >
             <Icon name="x" className="h-4 w-4" />

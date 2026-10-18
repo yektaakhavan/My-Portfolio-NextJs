@@ -482,3 +482,36 @@ body {
     display: none !important;
   }
 }
+
+/* ========================= Persian (fa) / right-to-left ========================= */
+
+/* Persian font: Manrope and Fraunces have no Arabic-script letters, so Vazirmatn (self-hosted) takes over. */
+:lang(fa),
+:lang(fa) .font-sans,
+:lang(fa) .font-display,
+:lang(fa) .font-mono {
+  font-family: "Vazirmatn Variable", "Vazirmatn", Tahoma, "Segoe UI", sans-serif;
+}
+/* code / email / URLs stay in a monospace face even on Persian pages */
+:lang(fa) code,
+:lang(fa) pre,
+:lang(fa) .font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* IMPORTANT: letter-spacing (tracking-*) breaks the joined letters of Arabic-script text. */
+:lang(fa),
+:lang(fa) * {
+  letter-spacing: 0 !important;
+}
+/* "uppercase" is meaningless for Persian; keep the small eyebrow labels readable instead */
+:lang(fa) .uppercase {
+  text-transform: none;
+}
+/* Persian text needs a little more line height than Latin */
+:lang(fa) body {
+  line-height: 1.8;
+}
+:lang(fa) .leading-tight {
+  line-height: 1.5;
+}

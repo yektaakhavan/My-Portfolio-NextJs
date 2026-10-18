@@ -1,70 +1,32 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api } from "@/lib/api";
 import { isValidEmail } from "@/lib/utils";
+import { fmt, formatNumber } from "@/i18n";
+import { useI18n } from "@/i18n/provider";
+import { rich } from "@/i18n/rich";
 import { Icon } from "./icons";
+import { LocaleLink } from "./locale-link";
 import { useToast } from "./toast";
 import { Button, Field, Input, Textarea } from "./ui";
 
 type Variant = "contact" | "public";
 
-const COPY = {
-  contact: {
-    endpoint: "/api/public/contact",
-    bodyLabel: "Message",
-    bodyPlaceholder: "Tell me about your project or question…",
-    max: 5000,
-    submit: "Send message",
-    sending: "Sending message…",
-    doneTitle: "Message sent",
-    doneText: "Thank you for reaching out. Your message went straight to my private inbox and I will reply by email.",
-    another: "Write another message",
-    consent: (
-      <>
-        I have read the{" "}
-        <Link href="/privacy" className="font-semibold text-accent-300 underline underline-offset-2">
-          Privacy Policy
-        </Link>{" "}
-        and agree that my details are used to answer my message.
-      </>
-    ),
-    consentError: "Please confirm that you agree to the Privacy Policy.",
-  },
-  public: {
-    endpoint: "/api/public/messages",
-    bodyLabel: "Your message",
-    bodyPlaceholder: "Say hello, share feedback, or leave a kind word…",
-    max: 800,
-    submit: "Submit message for review",
-    sending: "Submitting…",
-    doneTitle: "Thank you — message received",
-    doneText:
-      "Your message is waiting for my review. It will appear on this page once I approve it. I never publish your email address.",
-    another: "Write another message",
-    consent: (
-      <>
-        I agree that my name and message will be shown publicly on this page <strong>after the owner approves them</strong>
-        , and I have read the{" "}
-        <Link href="/privacy" className="font-semibold text-accent-300 underline underline-offset-2">
-          Privacy Policy
-        </Link>
-        .
-      </>
-    ),
-    consentError: "Please agree to the public display of your message after review.",
-  },
-} as const;
+const MAX = { contact: 5000, public: 800 } as const;
+const ENDPOINT = { contact: "/api/public/contact", public: "/api/public/messages" } as const;
 
 /**
  * One accessible form used by both the private contact form and the public (moderated) message form.
  * - every field has a real <label>, errors are linked with aria-describedby and announced
  * - works fully with the keyboard; focus moves to the first invalid field on error
  * - hidden "website" honeypot + fill-time check stop simple bots
+ * - the visitor's language is sent along so server messages come back translated
  */
 export function PublicForm({ variant }: { variant: Variant }) {
-  const c = COPY[variant];
+  const { t, locale } = useI18n();
+  const c = t.forms[variant];
+  const max = MAX[variant];
   const toast = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const doneRef = useRef<HTMLHeadingElement>(null);
@@ -94,10 +56,10 @@ export function PublicForm({ variant }: { variant: Variant }) {
   async function submit(e: FormEvent) {
     e.preventDefault();
     const next: Record<string, string> = {};
-    if (form.name.trim().length < 2) next.name = "Please enter your name (at least 2 characters).";
-    if (variant === "contact" && !isValidEmail(form.email.trim())) next.email = "Please enter a valid email address, like name@example.com.";
-    if (variant === "public" && form.email.trim() && !isValidEmail(form.email.trim())) next.email = "That email address doesn't look right.";
-    if (form.body.trim().length < 10) next.body = "Your message should be at least 10 characters.";
+    if (form.name.trim().length < 2) next.name = t.forms.errName;
+    if (variant === "contact" && !isValidEmail(form.email.trim())) next.email = t.forms.errEmailContact;
+    if (variant === "public" && form.email.trim() && !isValidEmail(form.email.trim())) next.email = t.forms.errEmailPublic;
+    if (form.body.trim().length < 10) next.body = t.forms.errBody;
     if (!form.consent) next.consent = c.consentError;
     setErrors(next);
     if (Object.keys(next).length) {
@@ -107,9 +69,9 @@ export function PublicForm({ variant }: { variant: Variant }) {
 
     setStatus("sending");
     try {
-      await api(c.endpoint, {
+      await api(ENDPOINT[variant], {
         method: "POST",
-        json: { ...form, name: form.name.trim(), email: form.email.trim(), body: form.body.trim(), startedAt: startedAt.current },
+        json: { ...form, name: form.name.trim(), email: form.email.trim(), body: form.body.trim(), startedAt: startedAt.current, locale },
       });
       setStatus("sent");
       setForm({ name: "", email: "", phone: "", body: "", website: "", consent: false });
@@ -117,11 +79,21 @@ export function PublicForm({ variant }: { variant: Variant }) {
       setStatus("idle");
       toast({
         tone: "error",
-        title: "Could not send your message",
-        detail: err instanceof Error ? err.message : "Please try again later.",
+        title: t.forms.failTitle,
+        detail: err instanceof Error ? err.message : t.forms.failText,
       });
     }
   }
+
+  const privacyLink = (
+    <LocaleLink href="/privacy" className="font-semibold text-accent-300 underline underline-offset-2">
+      {t.forms.privacyLink}
+    </LocaleLink>
+  );
+  const consentText =
+    variant === "public"
+      ? rich(t.forms.public.consent, { bold: <strong>{t.forms.public.consentBold}</strong>, privacy: privacyLink })
+      : rich(t.forms.contact.consent, { privacy: privacyLink });
 
   if (status === "sent") {
     return (
@@ -143,23 +115,23 @@ export function PublicForm({ variant }: { variant: Variant }) {
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="space-y-4" aria-describedby="form-note">
       <p id="form-note" className="text-xs text-muted">
-        Fields marked <span aria-hidden className="text-danger">*</span>
-        <span className="sr-only">with an asterisk</span> are required.
+        {t.forms.requiredNote}
       </p>
 
-      <Field label="Your name" required error={errors.name}>
-        <Input value={form.name} onChange={set("name")} invalid={!!errors.name} autoComplete="name" maxLength={80} required />
+      <Field label={t.forms.name} required error={errors.name}>
+        <Input dir="auto" value={form.name} onChange={set("name")} invalid={!!errors.name} autoComplete="name" maxLength={80} required />
       </Field>
 
       <Field
-        label="Email address"
+        label={t.forms.email}
         required={variant === "contact"}
-        hint={variant === "public" ? "Optional. Kept private — never shown on the site." : undefined}
+        hint={variant === "public" ? t.forms.emailHintPublic : undefined}
         error={errors.email}
       >
         <Input
           type="email"
           inputMode="email"
+          dir="ltr"
           value={form.email}
           onChange={set("email")}
           invalid={!!errors.email}
@@ -171,26 +143,24 @@ export function PublicForm({ variant }: { variant: Variant }) {
       </Field>
 
       {variant === "contact" && (
-        <Field label="Phone number" hint="optional">
-          <Input type="tel" inputMode="tel" value={form.phone} onChange={set("phone")} autoComplete="tel" maxLength={40} />
+        <Field label={t.forms.phone} hint="optional">
+          <Input type="tel" inputMode="tel" dir="ltr" value={form.phone} onChange={set("phone")} autoComplete="tel" maxLength={40} />
         </Field>
       )}
 
-      <Field label={c.bodyLabel} required error={errors.body} hint={`${form.body.length} / ${c.max} characters`}>
-        <Textarea
-          value={form.body}
-          onChange={set("body")}
-          invalid={!!errors.body}
-          maxLength={c.max}
-          placeholder={c.bodyPlaceholder}
-          required
-        />
+      <Field
+        label={c.bodyLabel}
+        required
+        error={errors.body}
+        hint={fmt(t.forms.counter, { n: formatNumber(locale, form.body.length), max: formatNumber(locale, max) })}
+      >
+        <Textarea dir="auto" value={form.body} onChange={set("body")} invalid={!!errors.body} maxLength={max} placeholder={c.bodyPlaceholder} required />
       </Field>
 
       {/* Honeypot: invisible to people and screen readers, bots fill it in */}
-      <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+      <div aria-hidden className="absolute -start-[9999px] h-0 w-0 overflow-hidden">
         <label>
-          Leave this field empty
+          {t.forms.honeypot}
           <input
             type="text"
             tabIndex={-1}
@@ -217,7 +187,7 @@ export function PublicForm({ variant }: { variant: Variant }) {
             className="mt-1 h-5 w-5 shrink-0 accent-[var(--c-accent-400)]"
           />
           <label htmlFor="consent" className="text-sm leading-relaxed text-muted">
-            {c.consent}
+            {consentText}
           </label>
         </div>
         <div id="consent-error" aria-live="polite">

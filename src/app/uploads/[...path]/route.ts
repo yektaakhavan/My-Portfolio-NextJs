@@ -4,7 +4,7 @@ import path from "node:path";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(/*turbopackIgnore: true*/ process.cwd(), "uploads");
 const NAME = /^[a-f0-9]{20}-(640|1600)\.webp$/;
 
 /** Serves uploaded images (files added after `next build` are not served from /public, so we do it here). */

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "./icons";
+import { useI18n } from "@/i18n/provider";
 
 type Tone = "success" | "error" | "info";
 type Toast = { id: number; title: string; detail?: string; tone: Tone };
@@ -21,6 +22,7 @@ export function useToast() {
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const { t: dict } = useI18n();
   const [toasts, setToasts] = useState<Toast[]>([]);
   const counter = useRef(0);
   const timers = useRef(new Map<number, number>());
@@ -53,8 +55,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         role="region"
-        aria-label="Notifications"
-        className="pointer-events-none fixed right-5 bottom-5 z-[90] flex w-[min(92vw,22rem)] flex-col gap-2"
+        aria-label={dict.common.notifications}
+        className="pointer-events-none fixed end-5 bottom-5 z-[90] flex w-[min(92vw,22rem)] flex-col gap-2"
       >
         {toasts.map((t) => (
           <div
@@ -86,8 +88,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <button
               type="button"
               onClick={() => dismiss(t.id)}
-              className="ml-auto shrink-0 rounded p-1 text-muted transition hover:text-fg"
-              aria-label="Dismiss notification"
+              className="ms-auto shrink-0 rounded p-1 text-muted transition hover:text-fg"
+              aria-label={dict.common.dismiss}
             >
               <Icon name="x" className="h-3.5 w-3.5" />
             </button>

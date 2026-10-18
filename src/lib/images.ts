@@ -1,12 +1,14 @@
 import type { StoredImage } from "@/db/schema";
 
-export type ProjectImage = { url: string; alt: string };
+/** `auto` = no alt text was written, a generic one was generated (rebuilt per language). */
+export type ProjectImage = { url: string; alt: string; auto?: boolean };
 
 export function normalizeImages(list: StoredImage[] | null | undefined, fallbackAlt: string): ProjectImage[] {
   return (list ?? [])
     .map((img, i) => {
-      if (typeof img === "string") return { url: img, alt: `${fallbackAlt} — screenshot ${i + 1}` };
-      return { url: img.url, alt: img.alt?.trim() || `${fallbackAlt} — screenshot ${i + 1}` };
+      if (typeof img === "string") return { url: img, alt: `${fallbackAlt} — screenshot ${i + 1}`, auto: true };
+      const alt = img.alt?.trim();
+      return alt ? { url: img.url, alt } : { url: img.url, alt: `${fallbackAlt} — screenshot ${i + 1}`, auto: true };
     })
     .filter((img) => !!img.url);
 }

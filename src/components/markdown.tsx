@@ -9,7 +9,7 @@ import remarkGfm from "remark-gfm";
  *  - headings are shifted down so the page outline stays valid (page h1 → section h2 → write-up h3…)
  *  - dir="auto": paragraphs written in Persian/Arabic are laid out right-to-left automatically
  */
-const components: Components = {
+const makeComponents = (newTab: string): Components => ({
   h1: ({ children }) => <h3 dir="auto" className="mt-6 mb-2 font-display text-xl text-fg first:mt-0">{children}</h3>,
   h2: ({ children }) => <h3 dir="auto" className="mt-6 mb-2 font-display text-xl text-fg first:mt-0">{children}</h3>,
   h3: ({ children }) => <h4 dir="auto" className="mt-5 mb-1.5 font-display text-lg text-fg first:mt-0">{children}</h4>,
@@ -17,11 +17,11 @@ const components: Components = {
   h5: ({ children }) => <h5 dir="auto" className="mt-4 mb-1 text-base font-bold text-fg first:mt-0">{children}</h5>,
   h6: ({ children }) => <h5 dir="auto" className="mt-4 mb-1 text-base font-bold text-fg first:mt-0">{children}</h5>,
   p: ({ children }) => <p dir="auto" className="my-3 leading-relaxed text-fg/90 first:mt-0 last:mb-0">{children}</p>,
-  ul: ({ children }) => <ul className="my-3 list-disc space-y-1.5 pl-6 text-fg/90 marker:text-accent-300">{children}</ul>,
-  ol: ({ children }) => <ol className="my-3 list-decimal space-y-1.5 pl-6 text-fg/90 marker:font-semibold marker:text-accent-300">{children}</ol>,
+  ul: ({ children }) => <ul className="my-3 list-disc space-y-1.5 ps-6 text-fg/90 marker:text-accent-300">{children}</ul>,
+  ol: ({ children }) => <ol className="my-3 list-decimal space-y-1.5 ps-6 text-fg/90 marker:font-semibold marker:text-accent-300">{children}</ol>,
   li: ({ children }) => <li dir="auto" className="leading-relaxed">{children}</li>,
   blockquote: ({ children }) => (
-    <blockquote dir="auto" className="my-4 border-l-4 border-accent-400 bg-surface-2/60 py-1 pr-3 pl-4 text-muted italic">
+    <blockquote dir="auto" className="my-4 border-s-4 border-accent-400 bg-surface-2/60 py-1 pe-3 ps-4 text-muted italic">
       {children}
     </blockquote>
   ),
@@ -34,7 +34,7 @@ const components: Components = {
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
         {children}
-        {external ? <span className="sr-only"> (opens in a new tab)</span> : null}
+        {external ? <span className="sr-only"> {newTab}</span> : null}
       </a>
     );
   },
@@ -54,17 +54,17 @@ const components: Components = {
   ),
   table: ({ children }) => (
     <div className="my-4 overflow-x-auto">
-      <table className="w-full min-w-[20rem] border-collapse text-left text-sm">{children}</table>
+      <table className="w-full min-w-[20rem] border-collapse text-start text-sm">{children}</table>
     </div>
   ),
   th: ({ children }) => <th scope="col" className="border border-line bg-surface-2 px-3 py-2 font-semibold text-fg">{children}</th>,
   td: ({ children }) => <td className="border border-line px-3 py-2 text-fg/90">{children}</td>,
   img: () => null,
-};
+});
 
-export function MarkdownContent({ source }: { source: string }) {
+export function MarkdownContent({ source, newTabLabel = "(opens in a new tab)" }: { source: string; newTabLabel?: string }) {
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={makeComponents(newTabLabel)}>
       {source}
     </ReactMarkdown>
   );

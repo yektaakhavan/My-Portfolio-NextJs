@@ -7,7 +7,7 @@ import { adminGuard } from "@/lib/guard";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(/*turbopackIgnore: true*/ process.cwd(), "uploads");
 const MAX_BYTES = 12 * 1024 * 1024;
 const ALLOWED = new Set(["jpeg", "png", "webp", "gif", "avif"]);
 

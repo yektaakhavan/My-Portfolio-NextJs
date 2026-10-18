@@ -3,6 +3,12 @@ import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
 import { db } from "@/db";
 import { sameOrigin } from "./guard";
 import { hashIp, clientIp } from "./request";
+import { getDictionary, isLocale } from "@/i18n";
+
+/** The visitor's language, sent by the form (falls back to English). */
+export function localeOf(body: Record<string, unknown> | null) {
+  return getDictionary(isLocale(body?.locale as string) ? (body!.locale as string) : "en");
+}
 
 export type SubmissionGate =
   | { ok: true; ipHash: string; silent: false }
@@ -28,7 +34,8 @@ export async function gateSubmission(
   table: PgTable & { ipHash: PgColumn; createdAt: PgColumn },
   limits = { perHour: 3, perDay: 10 },
 ): Promise<SubmissionGate> {
-  if (!sameOrigin(req)) return { ok: false, response: json("Cross-site request blocked.", 403) };
+  const t = localeOf(body).api;
+  if (!sameOrigin(req)) return { ok: false, response: json(t.crossSite, 403) };
 
   const ipHash = hashIp(clientIp(req));
 
@@ -51,7 +58,7 @@ export async function gateSubmission(
   if (hour.n >= limits.perHour || day.n >= limits.perDay) {
     return {
       ok: false,
-      response: json("You've sent several messages recently. Please try again a bit later.", 429, {
+      response: json(t.rateLimit, 429, {
         "Retry-After": "3600",
       }),
     };

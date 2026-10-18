@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { LOCALES } from "@/i18n/config";
 import { getCurrentUser, unauthorized } from "./auth";
 
 /** Rejects cross-site browser requests (extra layer on top of SameSite=Lax cookies). */
@@ -23,5 +24,6 @@ export async function adminGuard(req: Request): Promise<Response | null> {
 
 /** Public pages are cached (ISR); call after any admin change so visitors see it immediately. */
 export function revalidatePublic() {
-  revalidatePath("/", "layout");
+  // every language version of every public page (the default language is served from /en or /fa internally)
+  for (const l of LOCALES) revalidatePath(`/${l}`, "layout");
 }

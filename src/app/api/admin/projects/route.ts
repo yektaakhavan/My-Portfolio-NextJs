@@ -4,7 +4,7 @@ import { projects } from "@/db/schema";
 import { badRequest, getCurrentUser, unauthorized } from "@/lib/auth";
 import { toProject } from "@/lib/data";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
-import { parseImages, strList } from "@/lib/admin-input";
+import { parseImages, parseProjectTranslations, strList } from "@/lib/admin-input";
 import { cleanText, safeHttpUrl } from "@/lib/validators";
 import { slugify } from "@/lib/utils";
 
@@ -53,6 +53,7 @@ export async function POST(req: Request) {
       title,
       description,
       details: cleanText(body.details, 20000),
+      translations: parseProjectTranslations(body.translations),
       slug: await uniqueSlug(title),
       tags: strList(body.tags, 12, 40),
       tech: strList(body.tech, 20, 40),

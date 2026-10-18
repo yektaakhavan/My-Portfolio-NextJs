@@ -3,7 +3,9 @@ import { cache } from "react";
 import { and, asc, count, desc, eq, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { messages, profile, projects, publicMessages, skills } from "@/db/schema";
+import type { Locale } from "@/i18n/config";
 import { normalizeImages } from "./images";
+import { localizeProfile, localizeProject, localizeSkill } from "./localize";
 import type { Profile, Project, PublicMessage, Skill } from "./types";
 
 type ProjectRow = typeof projects.$inferSelect;
@@ -22,33 +24,49 @@ export function toProfile(row: ProfileRow): Profile {
 }
 
 /** React cache(): header, footer and page all call this; the DB is hit once per request. */
-export const getProfile = cache(async (): Promise<Profile | null> => {
+const getProfileRaw = cache(async (): Promise<Profile | null> => {
   const [row] = await db.select().from(profile).limit(1);
   return row ? toProfile(row) : null;
 });
 
-export const getSkills = cache(async (): Promise<Skill[]> => {
+/** `locale` picks the language of bio / title / experience… (falls back to English where not translated). */
+export const getProfile = cache(async (locale: Locale = "en"): Promise<Profile | null> => {
+  const p = await getProfileRaw();
+  return p ? localizeProfile(p, locale) : null;
+});
+
+const getSkillsRaw = cache(async (): Promise<Skill[]> => {
   return db.select().from(skills).orderBy(asc(skills.sort), asc(skills.id));
 });
 
-export const getProjects = cache(async (): Promise<Project[]> => {
+export const getSkills = cache(async (locale: Locale = "en"): Promise<Skill[]> => {
+  const all = await getSkillsRaw();
+  return all.map((x) => localizeSkill(x, locale));
+});
+
+const getProjectsRaw = cache(async (): Promise<Project[]> => {
   const rows = await db.select().from(projects).orderBy(asc(projects.sort), asc(projects.id));
   return rows.map(toProject);
 });
 
-export const getProjectBySlug = cache(async (slug: string): Promise<Project | null> => {
-  const [row] = await db.select().from(projects).where(eq(projects.slug, slug)).limit(1);
-  return row ? toProject(row) : null;
+export const getProjects = cache(async (locale: Locale = "en"): Promise<Project[]> => {
+  const all = await getProjectsRaw();
+  return all.map((x) => localizeProject(x, locale));
 });
 
-export const getRelatedProjects = cache(async (slug: string): Promise<Project[]> => {
+export const getProjectBySlug = cache(async (slug: string, locale: Locale = "en"): Promise<Project | null> => {
+  const [row] = await db.select().from(projects).where(eq(projects.slug, slug)).limit(1);
+  return row ? localizeProject(toProject(row), locale) : null;
+});
+
+export const getRelatedProjects = cache(async (slug: string, locale: Locale = "en"): Promise<Project[]> => {
   const rows = await db
     .select()
     .from(projects)
     .where(and(ne(projects.slug, slug), eq(projects.featured, true)))
     .orderBy(asc(projects.sort))
     .limit(2);
-  return rows.map(toProject);
+  return rows.map((r) => localizeProject(toProject(r), locale));
 });
 
 /** Only APPROVED messages ever reach the public site. */

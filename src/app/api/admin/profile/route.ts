@@ -4,6 +4,7 @@ import { profile } from "@/db/schema";
 import { badRequest, getCurrentUser, unauthorized } from "@/lib/auth";
 import { toProfile } from "@/lib/data";
 import { adminGuard, revalidatePublic } from "@/lib/guard";
+import { parseProfileTranslations } from "@/lib/admin-input";
 import { safeHttpUrl, safeMediaUrl } from "@/lib/validators";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ const DEFAULT_PROFILE: ProfileRow = {
   tagline: "",
   avatarUrl: "",
   avatarAlt: "",
+  translations: {},
   location: "",
   bio: [],
   traits: [],
@@ -77,6 +79,7 @@ export async function PUT(req: Request) {
     education: Array.isArray(body.education)
       ? (body.education as ProfileRow["education"])
       : base.education,
+    translations: "translations" in body ? parseProfileTranslations(body.translations) : base.translations,
     updatedAt: new Date(),
   };
 
