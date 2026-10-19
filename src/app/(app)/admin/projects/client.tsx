@@ -6,6 +6,7 @@ import { cn, splitList } from "@/lib/utils";
 import { monogram, type Project, type ProjectImage } from "@/lib/types";
 import { ImageDropzone } from "@/components/image-dropzone";
 import { SortableList } from "@/components/sortable";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Icon } from "@/components/icons";
 import { useToast } from "@/components/toast";
 import {
@@ -33,6 +34,8 @@ type FormState = {
   faTitle: string;
   faDescription: string;
   faTags: string;
+  details: string;
+  faDetails: string;
 };
 
 const EMPTY: FormState = {
@@ -48,6 +51,8 @@ const EMPTY: FormState = {
   faTitle: "",
   faDescription: "",
   faTags: "",
+  details: "",
+  faDetails: "",
 };
 
 function toForm(p: Project): FormState {
@@ -65,6 +70,8 @@ function toForm(p: Project): FormState {
     faTitle: p.translations?.fa?.title ?? "",
     faDescription: p.translations?.fa?.description ?? "",
     faTags: (p.translations?.fa?.tags ?? []).join("، "),
+    details: p.details ?? "",
+    faDetails: p.translations?.fa?.details ?? "",
   };
 }
 
@@ -76,6 +83,7 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [detailsLang, setDetailsLang] = useState<"en" | "fa">("en");
 
   async function reorder(next: Project[]) {
     const previous = projects;
@@ -112,12 +120,13 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
       images: form.images,
       accent: form.accent,
       featured: form.featured,
-      // only these three Persian fields are sent; the Persian write-up is edited on its own page and is kept
+      details: form.details,
       translations: {
         fa: {
           title: form.faTitle.trim(),
           description: form.faDescription.trim(),
           tags: form.faTags.split(/[,،]/).map((x) => x.trim()).filter(Boolean),
+          details: form.faDetails,
         },
       },
     };
@@ -230,9 +239,6 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
                 </div>
               </div>
               <div className="flex shrink-0 gap-1 px-4 pb-4 sm:pb-0">
-                <Button href={`/admin/projects/${p.id}/details`} variant="soft" size="sm" icon="file-text">
-                  Write-up<span className="sr-only"> for project {p.title}</span>
-                </Button>
                 <Button variant="soft" size="sm" icon="pencil" onClick={() => openEdit(p)}>
                   Edit<span className="sr-only"> project {p.title}</span>
                 </Button>
@@ -289,6 +295,38 @@ export default function ProjectsClient({ initial }: { initial: Project[] }) {
             <Field label="Filter tags (Persian)" hint="Comma separated.">
               <Input dir="rtl" lang="fa" value={form.faTags} onChange={(e) => setForm((f) => ({ ...f, faTags: e.target.value }))} />
             </Field>
+          </fieldset>
+          <fieldset className="space-y-3 rounded-xl border border-line p-4">
+            <legend className="px-2 text-sm font-semibold text-fg">Write-up — optional</legend>
+            <p className="text-xs text-muted">
+              Extra text for the project&apos;s own page, under “Behind the project”: what you learned, the challenges, the result. Leave empty to hide that section.
+            </p>
+            <div role="group" aria-label="Language of the write-up" className="flex gap-2">
+              {(["en", "fa"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  aria-pressed={detailsLang === l}
+                  onClick={() => setDetailsLang(l)}
+                  className={
+                    "min-h-9 rounded-full px-4 py-1.5 text-xs font-semibold transition " +
+                    (detailsLang === l ? "bg-accent-400 text-on-accent" : "border border-muted/75 text-muted hover:text-fg")
+                  }
+                >
+                  {l === "en" ? "English" : "فارسی (Persian)"}
+                  {(l === "en" ? form.details : form.faDetails).trim() ? <span className="sr-only"> — has text</span> : null}
+                </button>
+              ))}
+            </div>
+            <MarkdownEditor
+              key={detailsLang}
+              kind="project"
+              lang={detailsLang}
+              label={detailsLang === "fa" ? "Write-up in Persian" : "Write-up in English"}
+              value={detailsLang === "fa" ? form.faDetails : form.details}
+              onChange={(v) => setForm((f) => (detailsLang === "fa" ? { ...f, faDetails: v } : { ...f, details: v }))}
+              rows={10}
+            />
           </fieldset>
           <Field label="Tech stack" hint="Comma separated, e.g. React, TypeScript">
             <Input value={form.tech} onChange={(e) => setForm((f) => ({ ...f, tech: e.target.value }))} placeholder="React, TypeScript, Tailwind CSS" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "./icons";
 import { useFocusTrap } from "./use-focus-trap";
 import { fmt } from "@/i18n";
@@ -31,7 +32,9 @@ export function Lightbox({
   const prev = () => onNav((index - 1 + items.length) % items.length);
   const next = () => onNav((index + 1) % items.length);
 
-  return (
+  // Rendered straight under <body>: inside the page, an ancestor with a CSS transform (the page fade-in)
+  // turns `position: fixed` into "fixed to that ancestor", and the viewer opened somewhere off-screen.
+  return createPortal(
     <div
       ref={root}
       role="dialog"
@@ -84,6 +87,7 @@ export function Lightbox({
           <span className="ms-2">{fmt(t.lightbox.position, { i: index + 1, n: items.length })}</span>
         </figcaption>
       </figure>
-    </div>
+    </div>,
+    document.body,
   );
 }

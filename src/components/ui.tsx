@@ -18,6 +18,7 @@ import {
 } from "react";
 import { cn } from "@/lib/utils";
 import { Icon, type IconName } from "./icons";
+import { createPortal } from "react-dom";
 import { useFocusTrap } from "./use-focus-trap";
 import { useI18n } from "@/i18n/provider";
 
@@ -361,7 +362,7 @@ export function Modal({
   useFocusTrap(open, panel, onClose);
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center">
       <div className="modal-backdrop absolute inset-0 bg-canvas-deep/80 backdrop-blur-sm" onClick={onClose} aria-hidden />
       <div
@@ -401,7 +402,8 @@ export function Modal({
           <div className="flex items-center justify-end gap-2 border-t border-line bg-canvas/50 px-5 py-3.5">{footer}</div>
         ) : null}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

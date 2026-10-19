@@ -22,8 +22,8 @@
    ========================================================================== */
 
 @theme inline {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope Variable", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces Variable", "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
 
   --color-canvas: var(--c-canvas);
   --color-canvas-deep: var(--c-canvas-deep);
@@ -399,8 +399,10 @@ body {
     transform: translateY(0);
   }
 }
+/* "backwards" (not "both"): once finished, NO transform stays on the element. A lingering transform
+   turns position:fixed descendants (lightbox, dialogs) into "fixed to this element". */
 .fade-up {
-  animation: fade-up 0.5s ease both;
+  animation: fade-up 0.5s ease backwards;
 }
 
 @keyframes toast-in {

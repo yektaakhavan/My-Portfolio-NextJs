@@ -8,13 +8,6 @@ export function RootDocument({ lang, dir, children }: { lang: string; dir: "ltr"
     <html lang={lang} dir={dir} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Manrope:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
       </head>
 
       <body className="min-h-screen bg-canvas font-sans text-fg antialiased">
