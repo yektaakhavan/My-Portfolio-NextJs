@@ -1,4 +1,4 @@
-import type { ProfileText, ProjectText, SkillText, StoredImage, Translations } from "@/db/schema";
+import type { ArticleText, ProfileText, ProjectText, SkillText, StoredImage, Translations } from "@/db/schema";
 import { cleanText, safeMediaUrl } from "./validators";
 
 /** Accepts ["a", "b"] and returns a clean, de-duplicated, length-capped list. */
@@ -75,4 +75,16 @@ export function parseSkillTranslations(value: unknown): Translations<SkillText> 
 /** Keys that the new value does not mention keep their old value (e.g. saving the project form never wipes the Persian write-up). */
 export function mergeTranslations<T>(existing: Translations<T> | null | undefined, incoming: Translations<T>): Translations<T> {
   return { ...existing, fa: { ...existing?.fa, ...incoming.fa } };
+}
+
+export function parseArticleTranslations(value: unknown): Translations<ArticleText> {
+  const fa = (value as { fa?: Record<string, unknown> } | null)?.fa;
+  if (!fa || typeof fa !== "object") return {};
+  const out: Partial<ArticleText> = {};
+  if (typeof fa.title === "string") out.title = txt(fa.title, 200);
+  if (typeof fa.excerpt === "string") out.excerpt = txt(fa.excerpt, 500);
+  if (typeof fa.content === "string") out.content = txt(fa.content, 60000);
+  if (typeof fa.coverAlt === "string") out.coverAlt = txt(fa.coverAlt, 200);
+  if (Array.isArray(fa.tags)) out.tags = strList(fa.tags, 8, 40);
+  return { fa: out };
 }

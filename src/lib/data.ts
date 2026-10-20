@@ -2,11 +2,11 @@ import "server-only";
 import { cache } from "react";
 import { and, asc, count, desc, eq, ne } from "drizzle-orm";
 import { db } from "@/db";
-import { messages, profile, projects, publicMessages, skills } from "@/db/schema";
+import { articles, messages, profile, projects, publicMessages, skills } from "@/db/schema";
 import type { Locale } from "@/i18n/config";
 import { normalizeImages } from "./images";
-import { localizeProfile, localizeProject, localizeSkill } from "./localize";
-import type { Profile, Project, PublicMessage, Skill } from "./types";
+import { localizeArticle, localizeProfile, localizeProject, localizeSkill, readingMinutes } from "./localize";
+import type { Article, Profile, Project, PublicMessage, Skill } from "./types";
 
 type ProjectRow = typeof projects.$inferSelect;
 type ProfileRow = typeof profile.$inferSelect;
@@ -16,6 +16,25 @@ export function toProject(row: ProjectRow): Project {
     ...row,
     images: normalizeImages(row.images, row.title),
     createdAt: row.createdAt.toISOString(),
+  };
+}
+
+type ArticleRow = typeof articles.$inferSelect;
+
+export function toArticle(row: ArticleRow): Article {
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    content: row.content,
+    tags: row.tags,
+    coverUrl: row.coverUrl,
+    coverAlt: row.coverAlt,
+    published: row.published,
+    publishedAt: row.publishedAt.toISOString(),
+    readingMinutes: readingMinutes(row.content),
+    translations: row.translations,
   };
 }
 
@@ -132,3 +151,24 @@ export async function getPendingCount(): Promise<number> {
     .where(eq(publicMessages.status, "pending"));
   return row.n;
 }
+
+/* ---------------- blog ---------------- */
+
+const getArticlesRaw = cache(async (): Promise<Article[]> => {
+  const rows = await db.select().from(articles).orderBy(desc(articles.publishedAt), desc(articles.id));
+  return rows.map(toArticle);
+});
+
+/**
+ * Public: published articles, newest first, in one language (no locale = the admin area: every article
+ * including drafts, with all translations).
+ */
+export const getArticles = cache(async (locale?: Locale): Promise<Article[]> => {
+  const all = await getArticlesRaw();
+  return locale ? all.filter((a) => a.published).map((a) => localizeArticle(a, locale)) : all;
+});
+
+export const getArticleBySlug = cache(async (slug: string, locale: Locale): Promise<Article | null> => {
+  const all = await getArticles(locale);
+  return all.find((a) => a.slug === slug) ?? null;
+});

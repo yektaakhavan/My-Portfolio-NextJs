@@ -26,6 +26,7 @@ export type ProfileText = {
 };
 export type ProjectText = { title: string; description: string; details: string; tags: string[] };
 export type SkillText = { name: string };
+export type ArticleText = { title: string; excerpt: string; content: string; tags: string[]; coverAlt: string };
 export type Translations<T> = Partial<Record<Locale, Partial<T>>>;
 
 /** Images are stored either as a plain URL (legacy) or as { url, alt }. */
@@ -135,4 +136,29 @@ export const publicMessages = pgTable(
     index("public_messages_status_idx").on(t.status, t.createdAt),
     index("public_messages_ip_idx").on(t.ipHash, t.createdAt),
   ],
+);
+
+/**
+ * Blog articles. The base columns hold the English text; `translations.fa` holds the Persian version
+ * (anything left empty falls back to English). `content` is Markdown.
+ */
+export const articles = pgTable(
+  "articles",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt").notNull().default(""),
+    content: text("content").notNull().default(""),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    coverUrl: text("cover_url").notNull().default(""),
+    coverAlt: text("cover_alt").notNull().default(""),
+    published: boolean("published").notNull().default(true),
+    /** the date shown on the article ("when it was written") */
+    publishedAt: timestamp("published_at").notNull().defaultNow(),
+    translations: jsonb("translations").$type<Translations<ArticleText>>().notNull().default({}),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => [index("articles_published_idx").on(t.published, t.publishedAt)],
 );

@@ -69,6 +69,7 @@ export function PublicFooter({ profile, locale }: { profile: Profile | null; loc
           <nav aria-label={t.footer.footerNav} className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-semibold text-muted">
             <LocaleLink href="/about" className="hover:text-accent-300">{t.nav.about}</LocaleLink>
             <LocaleLink href="/projects" className="hover:text-accent-300">{t.nav.projects}</LocaleLink>
+            <LocaleLink href="/blog" className="hover:text-accent-300">{t.nav.blog}</LocaleLink>
             <LocaleLink href="/messages" className="hover:text-accent-300">{t.nav.messages}</LocaleLink>
             <LocaleLink href="/contact" className="hover:text-accent-300">{t.nav.contact}</LocaleLink>
           </nav>

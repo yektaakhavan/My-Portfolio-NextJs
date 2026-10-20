@@ -1,5 +1,5 @@
 import { DEFAULT_LOCALE, getDictionary, fmt, type Locale } from "@/i18n";
-import type { Profile, Project, Skill } from "./types";
+import type { Article, Profile, Project, Skill } from "./types";
 
 /**
  * Content (bio, project texts, skill names) is stored in English in the normal columns, and
@@ -53,6 +53,27 @@ export function localizeProject(p: Project, locale: Locale): Project {
 export function localizeSkill(s: Skill, locale: Locale): Skill {
   const t = locale === CONTENT_BASE ? undefined : s.translations?.[locale];
   return { ...s, translations: {}, name: t && str(t.name) ? t.name : s.name };
+}
+
+export function localizeArticle(a: Article, locale: Locale): Article {
+  const t = locale === CONTENT_BASE ? undefined : a.translations?.[locale];
+  const content = t && str(t.content) ? t.content : a.content;
+  return {
+    ...a,
+    translations: {},
+    title: t && str(t.title) ? t.title : a.title,
+    excerpt: t && str(t.excerpt) ? t.excerpt : a.excerpt,
+    content,
+    tags: t && list<string>(t.tags) ? t.tags : a.tags,
+    coverAlt: t && str(t.coverAlt) ? t.coverAlt : a.coverAlt,
+    readingMinutes: readingMinutes(content),
+  };
+}
+
+/** ~200 words per minute; never less than 1. */
+export function readingMinutes(markdown: string): number {
+  const words = markdown.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
 }
 
 export { DEFAULT_LOCALE };

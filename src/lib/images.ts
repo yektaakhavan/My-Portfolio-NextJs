@@ -18,5 +18,5 @@ export function thumbUrl(url: string): string {
   return url.replace(/-1600\.webp$/, "-640.webp");
 }
 export function hasThumb(url: string): boolean {
-  return /^\/uploads\/.+-1600\.webp$/.test(url);
+  return /^\/(uploads|images\/blog)\/.+-1600\.webp$/.test(url);
 }

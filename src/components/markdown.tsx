@@ -9,14 +9,27 @@ import remarkGfm from "remark-gfm";
  *  - headings are shifted down so the page outline stays valid (page h1 → section h2 → write-up h3…)
  *  - dir="auto": paragraphs written in Persian/Arabic are laid out right-to-left automatically
  */
-const makeComponents = (newTab: string): Components => ({
-  h1: ({ children }) => <h3 dir="auto" className="mt-6 mb-2 font-display text-xl text-fg first:mt-0">{children}</h3>,
-  h2: ({ children }) => <h3 dir="auto" className="mt-6 mb-2 font-display text-xl text-fg first:mt-0">{children}</h3>,
-  h3: ({ children }) => <h4 dir="auto" className="mt-5 mb-1.5 font-display text-lg text-fg first:mt-0">{children}</h4>,
-  h4: ({ children }) => <h5 dir="auto" className="mt-4 mb-1 text-base font-bold text-fg first:mt-0">{children}</h5>,
+const makeComponents = (newTab: string, article: boolean): Components => ({
+  // project write-up sits under an <h2>, so "#"/"##" become <h3>; an article sits under its <h1>, so they become <h2>
+  h1: ({ children }) => {
+    const H = article ? "h2" : "h3";
+    return <H dir="auto" className="mt-8 mb-2 font-display text-2xl text-fg first:mt-0">{children}</H>;
+  },
+  h2: ({ children }) => {
+    const H = article ? "h2" : "h3";
+    return <H dir="auto" className="mt-8 mb-2 font-display text-2xl text-fg first:mt-0">{children}</H>;
+  },
+  h3: ({ children }) => {
+    const H = article ? "h3" : "h4";
+    return <H dir="auto" className="mt-6 mb-1.5 font-display text-xl text-fg first:mt-0">{children}</H>;
+  },
+  h4: ({ children }) => {
+    const H = article ? "h4" : "h5";
+    return <H dir="auto" className="mt-5 mb-1 text-base font-bold text-fg first:mt-0">{children}</H>;
+  },
   h5: ({ children }) => <h5 dir="auto" className="mt-4 mb-1 text-base font-bold text-fg first:mt-0">{children}</h5>,
   h6: ({ children }) => <h5 dir="auto" className="mt-4 mb-1 text-base font-bold text-fg first:mt-0">{children}</h5>,
-  p: ({ children }) => <p dir="auto" className="my-3 leading-relaxed text-fg/90 first:mt-0 last:mb-0">{children}</p>,
+  p: ({ children }) => <p dir="auto" className={article ? "my-4 text-[1.05rem] leading-8 text-fg/90 first:mt-0 last:mb-0" : "my-3 leading-relaxed text-fg/90 first:mt-0 last:mb-0"}>{children}</p>,
   ul: ({ children }) => <ul className="my-3 list-disc space-y-1.5 ps-6 text-fg/90 marker:text-accent-300">{children}</ul>,
   ol: ({ children }) => <ol className="my-3 list-decimal space-y-1.5 ps-6 text-fg/90 marker:font-semibold marker:text-accent-300">{children}</ol>,
   li: ({ children }) => <li dir="auto" className="leading-relaxed">{children}</li>,
@@ -62,9 +75,18 @@ const makeComponents = (newTab: string): Components => ({
   img: () => null,
 });
 
-export function MarkdownContent({ source, newTabLabel = "(opens in a new tab)" }: { source: string; newTabLabel?: string }) {
+export function MarkdownContent({
+  source,
+  newTabLabel = "(opens in a new tab)",
+  variant = "section",
+}: {
+  source: string;
+  newTabLabel?: string;
+  /** "article": headings start at <h2> (page title is the <h1>) */
+  variant?: "section" | "article";
+}) {
   return (
-    <ReactMarkdown remarkPlugins={[remarkGfm]} components={makeComponents(newTabLabel)}>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} components={makeComponents(newTabLabel, variant === "article")}>
       {source}
     </ReactMarkdown>
   );

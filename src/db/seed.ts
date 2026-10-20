@@ -1,10 +1,12 @@
 import "dotenv/config";
 import { randomBytes } from "node:crypto";
 import { count } from "drizzle-orm";
+import { seedArticles } from "./articles-seed";
 import { db } from "./index";
 import {
   messages,
   publicMessages,
+  articles,
   profile,
   projects,
   sessions,
@@ -32,6 +34,7 @@ async function main() {
   await db.delete(sessions);
   await db.delete(messages);
   await db.delete(publicMessages);
+  await db.delete(articles);
   await db.delete(projects);
   await db.delete(skills);
   await db.delete(profile);
@@ -213,7 +216,8 @@ async function main() {
     },
   ]);
 
-  console.log(`Seeded portfolio for ${user.email}`);
+  const a = await seedArticles();
+  console.log(`Seeded portfolio for ${user.email} (+${a.added} sample articles)`);
   if (generated) console.log(`Generated admin password (shown once, change it!): ${adminPassword}`);
 }
 

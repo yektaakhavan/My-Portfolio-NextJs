@@ -16,6 +16,7 @@ const NAV = [
   { href: "/about", key: "about" },
   { href: "/skills", key: "skills" },
   { href: "/projects", key: "projects" },
+  { href: "/blog", key: "blog" },
   { href: "/messages", key: "messages" },
   { href: "/contact", key: "contact" },
   { href: "/resume", key: "resume" },

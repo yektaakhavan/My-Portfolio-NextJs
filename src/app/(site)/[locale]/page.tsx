@@ -2,7 +2,8 @@ import { Icon, SkillMark } from "@/components/icons";
 import { ProjectCard } from "@/components/project-card";
 import { PublicShell } from "@/components/public-shell";
 import { Badge, Button, Card } from "@/components/ui";
-import { getProfile, getProjects, getSkills } from "@/lib/data";
+import { ArticleSlider } from "@/components/article-slider";
+import { getArticles, getProfile, getProjects, getSkills } from "@/lib/data";
 import { levelTone } from "@/lib/types";
 import type { Metadata } from "next";
 import { alternatesFor, asLocale, fmt, formatNumber, getDictionary } from "@/i18n";
@@ -16,7 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = asLocale((await params).locale);
   const t = getDictionary(locale);
-  const [profile, projects, skills] = await Promise.all([getProfile(locale), getProjects(locale), getSkills(locale)]);
+  const [profile, projects, skills, articles] = await Promise.all([getProfile(locale), getProjects(locale), getSkills(locale), getArticles(locale)]);
+  const latest = articles.slice(0, 4);
   const featured = projects.filter((p) => p.featured).concat(projects.filter((p) => !p.featured)).slice(0, 4);
   const topSkills = skills.slice(0, 8);
   const name = profile?.name ?? "Your Name";
@@ -151,6 +153,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <div className="mt-8 text-center">
               <Button href="/skills" variant="outline" icon="arrow-right">{fmt(t.home.viewAllSkills, { n: n(skills.length) })}</Button>
             </div>
+          </div>
+        </section>
+      )}
+
+      {latest.length > 0 && (
+        <section aria-labelledby="blog-title" className="border-t border-line bg-canvas-deep/40 py-12">
+          <div className="mx-auto max-w-5xl px-4 sm:px-6">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold tracking-widest text-accent-300 uppercase">{t.blog.sliderEyebrow}</p>
+                <h2 id="blog-title" className="mt-1 font-display text-2xl text-fg">{t.blog.sliderTitle}</h2>
+              </div>
+              <Button href="/blog" variant="ghost" size="sm" icon="arrow-right">{articles.length > 4 ? fmt(t.blog.viewAllN, { n: n(articles.length) }) : t.blog.viewAll}</Button>
+            </div>
+            <ArticleSlider articles={latest} label={t.blog.sliderLabel} />
           </div>
         </section>
       )}

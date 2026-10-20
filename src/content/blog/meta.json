@@ -1,0 +1,86 @@
+[
+  {
+    "slug": "nextjs-rendering-strategies",
+    "publishedAt": "2026-09-04",
+    "tags": ["Next.js", "Performance"],
+    "title": "Static, dynamic or ISR? How I choose a rendering strategy in Next.js",
+    "excerpt": "Three ways to render a page, one simple question to choose between them, and the revalidation gotcha that cost me an afternoon.",
+    "coverAlt": "Illustration of three web pages side by side: a plain static page, a page with a refresh arrow, and a page with a lightning bolt.",
+    "fa": {
+      "tags": ["Next.js", "کارایی"],
+      "title": "استاتیک، داینامیک یا ISR؟ چطور استراتژی رندر را در Next.js انتخاب می‌کنم",
+      "excerpt": "سه روش رندر یک صفحه، یک سؤال ساده برای انتخاب بینشان، و دام revalidation که یک بعدازظهر از من گرفت.",
+      "coverAlt": "تصویرسازی از سه صفحه‌ی وب کنار هم: یک صفحه‌ی استاتیک ساده، صفحه‌ای با فلش بازآوری و صفحه‌ای با برق."
+    }
+  },
+  {
+    "slug": "accessible-forms-checklist",
+    "publishedAt": "2026-09-12",
+    "tags": ["Accessibility", "React"],
+    "title": "The accessibility checklist I run on every form",
+    "excerpt": "Eight small things that make a form usable with a keyboard and a screen reader, and how to check them in five minutes.",
+    "coverAlt": "A form with one field highlighted by a thick focus ring, one field showing an error message, and a submit button with a check mark.",
+    "fa": {
+      "tags": ["دسترس‌پذیری", "React"],
+      "title": "فهرست دسترس‌پذیری که روی هر فرم اجرا می‌کنم",
+      "excerpt": "هشت کار کوچک که یک فرم را با صفحه‌کلید و صفحه‌خوان قابل استفاده می‌کنند، و اینکه چطور در پنج دقیقه بررسی‌شان کنید.",
+      "coverAlt": "یک فرم با یک فیلد که حاشیه‌ی فوکوس ضخیم دارد، یک فیلد با پیام خطا و دکمه‌ی ارسال با علامت تیک."
+    }
+  },
+  {
+    "slug": "dark-mode-css-variables",
+    "publishedAt": "2026-09-20",
+    "tags": ["CSS", "Tailwind", "Accessibility"],
+    "title": "Dark mode without the flash: CSS variables and one tiny script",
+    "excerpt": "How to build a light and dark theme with color tokens named by role, avoid the white flash on load, and check contrast in both themes.",
+    "coverAlt": "A circle split in two halves: a bright sun on the left and a dark moon with stars on the right.",
+    "fa": {
+      "tags": ["CSS", "Tailwind", "دسترس‌پذیری"],
+      "title": "حالت تیره بدون پرش: متغیرهای CSS و یک اسکریپت کوچک",
+      "excerpt": "چطور تم روشن و تیره را با رنگ‌هایی که بر اساس نقش نام‌گذاری شده‌اند بسازید، از پرش سفید هنگام بارگذاری جلوگیری کنید و کنتراست را در هر دو تم بسنجید.",
+      "coverAlt": "دایره‌ای که به دو نیم تقسیم شده: خورشید روشن در سمت چپ و ماه تیره با ستاره‌ها در سمت راست."
+    }
+  },
+  {
+    "slug": "accessible-drag-and-drop",
+    "publishedAt": "2026-09-28",
+    "tags": ["React", "Accessibility", "UX"],
+    "title": "Drag and drop that also works with a keyboard",
+    "excerpt": "Mouse-only drag and drop shuts out many people. How I built a reorderable list that works with a mouse, touch and keyboard, and saves safely.",
+    "coverAlt": "A list of rows with grip handles, one row lifted slightly above the others over a dashed placeholder.",
+    "fa": {
+      "tags": ["React", "دسترس‌پذیری", "تجربه‌ی کاربری"],
+      "title": "درگ‌ودراپی که با صفحه‌کلید هم کار می‌کند",
+      "excerpt": "درگ‌ودراپِ فقط‌ماوس خیلی‌ها را کنار می‌گذارد. اینکه چطور فهرستی قابل جابه‌جایی ساختم که با ماوس، لمس و صفحه‌کلید کار می‌کند و امن ذخیره می‌شود.",
+      "coverAlt": "فهرستی از ردیف‌ها با دستگیره‌ی کشیدن که یک ردیف کمی بالاتر از بقیه روی یک جای‌نگهدارِ خط‌چین بلند شده است."
+    }
+  },
+  {
+    "slug": "portfolio-performance-fixes",
+    "publishedAt": "2026-10-05",
+    "tags": ["Performance", "Next.js"],
+    "title": "Five fixes that made my portfolio faster",
+    "excerpt": "What actually moved the needle: server rendering, smaller images, self-hosted fonts, stable layouts and measuring a production build.",
+    "coverAlt": "A speedometer gauge with the needle in the green zone, next to a tall faded bar shrinking into a tiny bright one.",
+    "fa": {
+      "tags": ["کارایی", "Next.js"],
+      "title": "پنج تغییری که نمونه‌کارم را سریع‌تر کرد",
+      "excerpt": "آنچه واقعاً فرق ایجاد کرد: رندر روی سرور، تصاویر کوچک‌تر، فونت‌های میزبانی‌شده روی خود سایت، چیدمان پایدار و اندازه‌گیری روی build نهایی.",
+      "coverAlt": "یک سرعت‌سنج با عقربه در ناحیه‌ی سبز، کنار یک میله‌ی بلندِ کم‌رنگ که به میله‌ای کوچک و درخشان تبدیل می‌شود."
+    }
+  },
+  {
+    "slug": "bilingual-rtl-lessons",
+    "publishedAt": "2026-10-12",
+    "tags": ["i18n", "CSS", "Next.js"],
+    "title": "Making a site bilingual: lessons from adding Persian",
+    "excerpt": "Routing, right-to-left layout, fonts and fallbacks: what I learned turning a one-language portfolio into an English and Persian site.",
+    "coverAlt": "Two page cards side by side with a double arrow between them: one with text lines aligned left, the other aligned right.",
+    "fa": {
+      "tags": ["i18n", "CSS", "Next.js"],
+      "title": "دوزبانه کردن یک سایت: درس‌هایی از اضافه کردن فارسی",
+      "excerpt": "مسیریابی، چیدمان راست‌به‌چپ، فونت‌ها و حالت‌های جایگزین: آنچه یاد گرفتم وقتی نمونه‌کار تک‌زبانه را به سایتی انگلیسی و فارسی تبدیل کردم.",
+      "coverAlt": "دو کارت صفحه کنار هم با یک فلش دوطرفه میانشان: یکی با خط‌های متن تراز چپ و دیگری تراز راست."
+    }
+  }
+]

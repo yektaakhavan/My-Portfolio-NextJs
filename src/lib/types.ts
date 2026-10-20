@@ -1,6 +1,6 @@
-import type { ProfileText, ProjectText, SkillText, Translations } from "@/db/schema";
+import type { ArticleText, ProfileText, ProjectText, SkillText, Translations } from "@/db/schema";
 import type { ProjectImage } from "./images";
-export type { ProfileText, ProjectImage, ProjectText, SkillText, Translations };
+export type { ArticleText, ProfileText, ProjectImage, ProjectText, SkillText, Translations };
 
 export type Experience = {
   role: string;
@@ -94,3 +94,19 @@ export function monogram(title: string): string {
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+export type Article = {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  tags: string[];
+  coverUrl: string;
+  coverAlt: string;
+  published: boolean;
+  /** ISO date: when the article was written / published */
+  publishedAt: string;
+  readingMinutes: number;
+  translations: Translations<ArticleText>;
+};
