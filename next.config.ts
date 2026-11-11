@@ -10,7 +10,6 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
-  serverExternalPackages: ["sharp"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
